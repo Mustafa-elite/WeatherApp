@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Weather Forcast</string>
+    <string name="today">Today</string>
+    <string name="sunrise">Sunrise:</string>
+    <string name="sunset">sunset:</string>
+    <string name="_3_hours_gap_forecast">3 hours gap Forecast</string>
+    <string name="daily_forecast">Daily Forecast</string>
 </resources>

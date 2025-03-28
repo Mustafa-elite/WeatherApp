@@ -1,6 +1,8 @@
 package com.example.weatherforcast.homeScreen
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,6 +24,7 @@ class HomeViewModel(val dataRepository: WeatherDataRepository):ViewModel() {
     private val _viewMessage:MutableLiveData<String> = MutableLiveData()
     val viewMessage:LiveData<String> =_viewMessage
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getRecentWeather(lon: Double, lat: Double) {
         viewModelScope.launch {
             try {
@@ -31,6 +34,7 @@ class HomeViewModel(val dataRepository: WeatherDataRepository):ViewModel() {
                         _weatherResponse.emit(Response.Failure(it)) }
                     .collect{
                         Log.i("TAG", "getRecentWeather:success ")
+                        Log.i("TAG", "getRecentWeather: "+it.threeHoursForecast[0].dt)
                         _weatherResponse.emit(Response.Success(it))}
             }catch (e:Exception){
                 Log.i("TAG", "getRecentWeather: failure catch 2")

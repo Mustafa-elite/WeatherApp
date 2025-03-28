@@ -1,15 +1,16 @@
 package com.example.weatherforcast.model.data
 
 data class DailyWeatherResponse(
-    val list: List<DailyWeatherData>
+    val list: MutableList<DailyWeatherData>
 )
 
 data class DailyWeatherData(
+    var dt: Long,
     val temp: ExtraTemp,
     val weather: List<Weather>
 )
 
 data class ExtraTemp(
-    val min: Double,
-    val max: Double
+    var min: Double,
+    var max: Double
 )

@@ -1,5 +1,10 @@
 package com.example.weatherforcast.model.data
 
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
+import com.example.weatherforcast.R
+import com.example.weatherforcast.helpyclasses.DateManager
+
 class WeatherInfo(
 
     var weatherDescription:String="-",
@@ -18,7 +23,9 @@ class WeatherInfo(
     var sunset: Long=0,
     var countryName:String="-",
     var cityName:String="-",
-    var iconInfo:Int=0,
+    var iconInfo:Int= R.drawable._1d,
+    var daysForecast:MutableList<DailyWeatherData> = mutableListOf(),
+    var threeHoursForecast:MutableList<ThreeHoursWeatherData> = mutableListOf(),
     var temperatureUnit: TemperatureUnit=TemperatureUnit.KELVIN,
     var windSpeedUnit: WindSpeedUnit=WindSpeedUnit.METER_SECOND
 ){
@@ -29,10 +36,20 @@ class WeatherInfo(
             feelsLike=convertTemperature(feelsLike,this.temperatureUnit,newTemperatureUnit)
             minTemp=convertTemperature(minTemp,this.temperatureUnit,newTemperatureUnit)
             maxTemp=convertTemperature(maxTemp,this.temperatureUnit,newTemperatureUnit)
+            daysForecast.forEach{
+                it.temp.min=convertTemperature(it.temp.min,this.temperatureUnit,newTemperatureUnit)
+                it.temp.max=convertTemperature(it.temp.max,this.temperatureUnit,newTemperatureUnit)
+            }
+            threeHoursForecast.forEach{
+                it.main.temp=convertTemperature(it.main.temp,this.temperatureUnit,newTemperatureUnit)
+                it.main.feels_like=convertTemperature(it.main.feels_like,this.temperatureUnit,newTemperatureUnit)
+                it.main.temp_max=convertTemperature(it.main.temp_max,this.temperatureUnit,newTemperatureUnit)
+                it.main.temp_min=convertTemperature(it.main.temp_min,this.temperatureUnit,newTemperatureUnit)
+            }
             this.temperatureUnit=newTemperatureUnit
         }
-    }
 
+    }
 
 
     private fun convertTemperature(value: Double, from: TemperatureUnit, to: TemperatureUnit): Double {
@@ -66,6 +83,22 @@ class WeatherInfo(
             else -> value
         }
         return (Math.round(convertedValue * 10) / 10.0)
+    }
+
+
+    fun getBackgroundImageRes(): Int {
+        val isNight= DateManager.isNightTime(calculationTime,sunrise,sunset)
+        val imageRes = when {
+            weatherDescription.contains("Clear", ignoreCase = true) && !isNight -> R.drawable.clear_weather_morning
+            weatherDescription.contains("Clear", ignoreCase = true) && isNight -> R.drawable.clear_weather_night
+            weatherDescription.contains("Rain", ignoreCase = true) && !isNight -> R.drawable.rain_weather_morning
+            weatherDescription.contains("Rain", ignoreCase = true) && isNight -> R.drawable.rain_weather_night
+            weatherDescription.contains("Drizzle", ignoreCase = true) -> R.drawable.drizzle_weather
+            weatherDescription.contains("Snow", ignoreCase = true) -> R.drawable.snow_weather
+            weatherDescription.contains("Thunderstorm", ignoreCase = true) -> R.drawable.thunderstorm_weather
+            else -> R.drawable.else_weather
+        }
+        return imageRes
     }
 }
 enum class TemperatureUnit(val unitSymbol: String){
