@@ -1,12 +1,21 @@
 package com.example.weatherforcast.model.data
 
+import android.util.Log
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 import com.example.weatherforcast.R
 import com.example.weatherforcast.helpyclasses.DateManager
 
+@Entity(tableName = "WeatherInfo")
 class WeatherInfo(
 
+    @PrimaryKey(autoGenerate = true)
+    val weatherId:Int=0,
+    var lon:Double=0.0,
+    var lat:Double=0.0,
     var weatherDescription:String="-",
     var windSpeed:Double=0.0,
     var temp:Double=0.0,
@@ -29,17 +38,23 @@ class WeatherInfo(
     var temperatureUnit: TemperatureUnit=TemperatureUnit.KELVIN,
     var windSpeedUnit: WindSpeedUnit=WindSpeedUnit.METER_SECOND
 ){
+
     fun convertTemperatureUnit(newTemperatureUnit: TemperatureUnit){
+        Log.i("TAG", "convertTemperatureUnit: ")
         if(newTemperatureUnit!=this.temperatureUnit)
         {
+
             temp=convertTemperature(temp,this.temperatureUnit,newTemperatureUnit)
             feelsLike=convertTemperature(feelsLike,this.temperatureUnit,newTemperatureUnit)
             minTemp=convertTemperature(minTemp,this.temperatureUnit,newTemperatureUnit)
             maxTemp=convertTemperature(maxTemp,this.temperatureUnit,newTemperatureUnit)
+            Log.i("TAG", "convertTemperatureUnit: "+daysForecast[0].temp.min)
             daysForecast.forEach{
+
                 it.temp.min=convertTemperature(it.temp.min,this.temperatureUnit,newTemperatureUnit)
                 it.temp.max=convertTemperature(it.temp.max,this.temperatureUnit,newTemperatureUnit)
             }
+            Log.i("TAG", "convertTemperatureUnit: "+daysForecast[0].temp.min)
             threeHoursForecast.forEach{
                 it.main.temp=convertTemperature(it.main.temp,this.temperatureUnit,newTemperatureUnit)
                 it.main.feels_like=convertTemperature(it.main.feels_like,this.temperatureUnit,newTemperatureUnit)
@@ -99,6 +114,37 @@ class WeatherInfo(
             else -> R.drawable.else_weather
         }
         return imageRes
+    }
+
+    fun fetchCurrentWeatherData(response: CurrentWeatherResponse) {
+        lon=response.coord.lon
+        lat = response.coord.lat
+        weatherDescription = response.weather[0].description
+        windSpeed = response.wind.speed
+        temp = response.main.temp
+        feelsLike = response.main.feels_like
+        pressure = response.main.pressure
+        humidityPercentage = response.main.humidity
+        visibility = response.visibility
+        cloudyPercentage = response.clouds.all
+        calculationTime = response.dt
+        timezone = response.timezone
+        sunrise = response.sys.sunrise
+        sunset = response.sys.sunset
+        countryName = response.sys.country
+        cityName = response.name
+        iconInfo = response.weather[0].iconRes
+    }
+
+    fun fetchThreeHoursWeatherData(response: ThreeHoursForecastResponse) {
+        threeHoursForecast = response.list
+    }
+
+    fun fetchDailyWeatherData(response: DailyWeatherResponse) {
+        minTemp=response.list[0].temp.min
+        maxTemp=response.list[0].temp.max
+        daysForecast=response.list
+
     }
 }
 enum class TemperatureUnit(val unitSymbol: String){

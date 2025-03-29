@@ -168,13 +168,6 @@ fun WeatherDetailsScreen(weatherInfo: WeatherInfo= WeatherInfo()){
                 weatherInfo.daysForecast.forEach{
                         dayItem-> DailyForecastItem(dayItem,weatherInfo.timezone)
                 }
-                /*LazyColumn (modifier = Modifier
-                    .padding(5.dp)
-                    ,verticalArrangement = Arrangement.spacedBy(30.dp)){
-                    items(items =weatherInfo.daysForecast ){dayItem->
-                        DailyForecastItem(dayItem)
-                    }
-                }*/
             }
 
         }
@@ -231,11 +224,6 @@ fun HourlyForecast(threeHoursItem: ThreeHoursWeatherData, timezone: Int) {
 
 @Composable
 fun TransparentCircle(sizeDP: Dp=300.dp,weatherInfo: WeatherInfo) {
-    /////////////get from sharedprefrences//////////////////
-
-    weatherInfo.convertTemperatureUnit(TemperatureUnit.CELSIUS)
-    weatherInfo.convertWindSpeedUnit(WindSpeedUnit.KILOMETER_HOUR)
-    /////////////
     Box(modifier = Modifier
         .size(sizeDP)
         .background(Color.Transparent),

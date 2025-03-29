@@ -27,6 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,6 +38,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.createGraph
 import com.example.weatherforcast.homeScreen.HomeScreen
 import com.example.weatherforcast.homeScreen.HomeViewModelFactory
+import com.example.weatherforcast.model.local.WeatherDatabase
+import com.example.weatherforcast.model.local.WeatherLocalDatSource
 import com.example.weatherforcast.model.remote.RetrofitHelper
 import com.example.weatherforcast.model.remote.WeatherRemoteDataSource
 import com.example.weatherforcast.model.repositories.WeatherDataRepository
@@ -112,7 +115,9 @@ private fun WeatherApp() {
                     viewModel(
                         factory = HomeViewModelFactory(
                         WeatherDataRepository.getInstance(
-                            WeatherRemoteDataSource(RetrofitHelper.weatherService)
+                            WeatherRemoteDataSource(RetrofitHelper.weatherService),
+                            WeatherLocalDatSource(WeatherDatabase.getInstance(LocalContext.current).getWeatherDao())
+
                         )))
 
                 )

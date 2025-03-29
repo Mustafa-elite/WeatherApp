@@ -1,8 +1,6 @@
 package com.example.weatherforcast.helpyclasses
 
-import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
-import java.time.Instant
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -49,6 +47,16 @@ class DateManager {
         }
         fun isNightTime(currentTime: Long, sunrise: Long, sunset: Long): Boolean {
             return currentTime < sunrise || currentTime > sunset
+        }
+        fun hasDurationPassed(timeSeconds: Long, days: Int = 0, hours: Int = 0, minutes: Int = 0): Boolean {
+            val currentUtcTime = System.currentTimeMillis() / 1000
+            val timeDifference = (days * 24 * 3600) + (hours * 3600) + (minutes * 60)
+            return currentUtcTime >= (timeSeconds + timeDifference)
+        }
+
+        fun hasTimePassed(seconds: Long): Boolean {
+            val currentUtcTime = System.currentTimeMillis() / 1000
+            return currentUtcTime>=seconds
         }
 
     }

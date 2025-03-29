@@ -28,13 +28,14 @@ class HomeViewModel(val dataRepository: WeatherDataRepository):ViewModel() {
     fun getRecentWeather(lon: Double, lat: Double) {
         viewModelScope.launch {
             try {
-                dataRepository.getRemoteWeatherLonLat(lon,lat)
+                dataRepository.getWeatherInfo(lon,lat)
                     .catch {
                         Log.i("TAG", "getRecentWeather:"+it.message)
+                        it.cause
                         _weatherResponse.emit(Response.Failure(it)) }
                     .collect{
                         Log.i("TAG", "getRecentWeather:success ")
-                        Log.i("TAG", "getRecentWeather: "+it.threeHoursForecast[0].dt)
+                        Log.i("TAG", "getRecentWeather: "+it.temperatureUnit+"...."+it.windSpeedUnit)
                         _weatherResponse.emit(Response.Success(it))}
             }catch (e:Exception){
                 Log.i("TAG", "getRecentWeather: failure catch 2")
