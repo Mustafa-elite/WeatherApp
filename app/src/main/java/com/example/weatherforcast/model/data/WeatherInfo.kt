@@ -1,5 +1,6 @@
 package com.example.weatherforcast.model.data
 
+import android.os.Parcelable
 import android.util.Log
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
@@ -8,6 +9,9 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.example.weatherforcast.R
 import com.example.weatherforcast.helpyclasses.DateManager
+import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
+
 
 @Entity(tableName = "WeatherInfo")
 class WeatherInfo(
@@ -33,14 +37,13 @@ class WeatherInfo(
     var countryName:String="-",
     var cityName:String="-",
     var iconInfo:Int= R.drawable._1d,
-    var daysForecast:MutableList<DailyWeatherData> = mutableListOf(),
-    var threeHoursForecast:MutableList<ThreeHoursWeatherData> = mutableListOf(),
+    var daysForecast: MutableList<DailyWeatherData> = mutableListOf(),
+    var threeHoursForecast: MutableList<ThreeHoursWeatherData> = mutableListOf(),
     var temperatureUnit: TemperatureUnit=TemperatureUnit.KELVIN,
     var windSpeedUnit: WindSpeedUnit=WindSpeedUnit.METER_SECOND
 ){
 
     fun convertTemperatureUnit(newTemperatureUnit: TemperatureUnit){
-        Log.i("TAG", "convertTemperatureUnit: ")
         if(newTemperatureUnit!=this.temperatureUnit)
         {
 
@@ -48,13 +51,11 @@ class WeatherInfo(
             feelsLike=convertTemperature(feelsLike,this.temperatureUnit,newTemperatureUnit)
             minTemp=convertTemperature(minTemp,this.temperatureUnit,newTemperatureUnit)
             maxTemp=convertTemperature(maxTemp,this.temperatureUnit,newTemperatureUnit)
-            Log.i("TAG", "convertTemperatureUnit: "+daysForecast[0].temp.min)
             daysForecast.forEach{
 
                 it.temp.min=convertTemperature(it.temp.min,this.temperatureUnit,newTemperatureUnit)
                 it.temp.max=convertTemperature(it.temp.max,this.temperatureUnit,newTemperatureUnit)
             }
-            Log.i("TAG", "convertTemperatureUnit: "+daysForecast[0].temp.min)
             threeHoursForecast.forEach{
                 it.main.temp=convertTemperature(it.main.temp,this.temperatureUnit,newTemperatureUnit)
                 it.main.feels_like=convertTemperature(it.main.feels_like,this.temperatureUnit,newTemperatureUnit)

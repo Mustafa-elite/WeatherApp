@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -30,20 +31,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.createGraph
-import com.example.weatherforcast.homeScreen.HomeScreen
+import androidx.navigation.navArgument
+import androidx.navigation.toRoute
+import com.example.weatherforcast.favouriteScreen.FavouritesViewModelFactory
+import com.example.weatherforcast.favouriteScreen.ui.FavouritesScreen
+import com.example.weatherforcast.homeScreen.ui.HomeScreen
 import com.example.weatherforcast.homeScreen.HomeViewModelFactory
+import com.example.weatherforcast.homeScreen.ui.WeatherDetailsScreen
+import com.example.weatherforcast.model.data.WeatherInfo
 import com.example.weatherforcast.model.local.WeatherDatabase
 import com.example.weatherforcast.model.local.WeatherLocalDatSource
 import com.example.weatherforcast.model.remote.RetrofitHelper
 import com.example.weatherforcast.model.remote.WeatherRemoteDataSource
 import com.example.weatherforcast.model.repositories.WeatherDataRepository
 import com.example.weatherforcast.ui.theme.WeatherForcastTheme
+import com.google.gson.Gson
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -80,7 +89,7 @@ fun MySplashScreen(action:  () -> Unit) {
 
 @Composable
 private fun WeatherApp() {
-    val navController= rememberNavController()
+    var navController= rememberNavController()
     val currentRoute= remember { mutableStateOf(Screen.Splash.rout) }
     LaunchedEffect(navController) {
         navController.currentBackStackEntryFlow.collect{
@@ -118,18 +127,45 @@ private fun WeatherApp() {
                             WeatherRemoteDataSource(RetrofitHelper.weatherService),
                             WeatherLocalDatSource(WeatherDatabase.getInstance(LocalContext.current).getWeatherDao())
 
-                        )))
+                        ))
+                    )
 
                 )
             }
             composable(route = Screen.Favourites.rout) {
-                FavouritesScreen()
+                FavouritesScreen(
+                    viewModel(
+                        factory = FavouritesViewModelFactory(
+                            WeatherDataRepository.getInstance(
+                                WeatherRemoteDataSource(RetrofitHelper.weatherService),
+                                WeatherLocalDatSource(WeatherDatabase.getInstance(LocalContext.current).getWeatherDao())
+                            ))
+                    ),
+                    { navController.navigate(Screen.Map.rout) },
+                    {weatherInfo->
+                        val weatherInfoJson = Gson().toJson(weatherInfo)
+                        navController.navigate(Screen.Details.createRoute(weatherInfoJson))}
+                    )
             }
             composable(route = Screen.Alerts.rout) {
                 ALertsScreen()
             }
             composable(route = Screen.Setting.rout) {
                 SettingScreen()
+            }
+
+            composable(route = Screen.Map.rout) {
+                MapScreen()
+            }
+            composable(
+                route = Screen.Details.rout,
+                arguments = listOf(navArgument("weatherInfo") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val json = backStackEntry.arguments?.getString("weatherInfo")
+                val weatherInfo = Gson().fromJson(json, WeatherInfo::class.java)
+                weatherInfo?.let {
+                    WeatherDetailsScreen(it)
+                }
             }
         }
         BackHandler (enabled = currentRoute.value!=Screen.Home.rout){
@@ -143,6 +179,11 @@ private fun WeatherApp() {
 
 
     }
+}
+
+@Composable
+fun MapScreen() {
+    Text("Test", fontSize = 30.sp)
 }
 
 @Composable
@@ -190,22 +231,6 @@ fun BottomNavigationBar(navController: NavHostController) {
 
             )
         }
-    }
-}
-
-
-
-
-@Composable
-fun FavouritesScreen(){
-    Box (modifier = Modifier
-        .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ){
-        Text(
-            text = "Profile Screen",
-            style = MaterialTheme.typography.headlineLarge
-        )
     }
 }
 

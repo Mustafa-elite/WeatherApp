@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.weatherforcast.model.data.WeatherInfo
 
 
 data class NavigationItem(
@@ -20,6 +21,12 @@ sealed class Screen(val rout: String) {
     object Favourites: Screen("favourites_screen")
     object Alerts: Screen("alerts_screen")
     object Setting: Screen("setting_screen")
+    object Map: Screen("map_screen")
+    data object Details : Screen("details_screen/{weatherInfo}") {
+        fun createRoute(weatherInfo: String): String {
+            return "details_screen/$weatherInfo"
+        }
+    }
 }
 
 

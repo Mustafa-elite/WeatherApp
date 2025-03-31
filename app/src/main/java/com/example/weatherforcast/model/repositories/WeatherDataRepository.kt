@@ -150,6 +150,23 @@ class WeatherDataRepository private constructor(
             .collect { emit(it) }
 
     }*/
+    suspend fun getFavData(): Flow<List<WeatherInfo>> = flow {
+        localDataSource.getAllStoredWeatherData().collect { weatherList ->
+            val updatedList = weatherList.map { storedWeather ->
+                val validatedWeather = validateWeatherData(storedWeather).apply {
+                    convertWindSpeedUnit(WindSpeedUnit.KILOMETER_HOUR)
+                    convertTemperatureUnit(TemperatureUnit.CELSIUS)
+                }
+
+                if (validatedWeather != storedWeather) {
+                    localDataSource.updateWeather(validatedWeather)
+                }
+                validatedWeather
+            }
+            emit(updatedList)
+        }
+    }.flowOn(Dispatchers.IO)
+
 
 
     private fun isNearbyLocation(lon1: Double,lat1: Double ,lon2: Double, lat2: Double ,requiredDistanceKm:Double): Boolean {
@@ -163,6 +180,7 @@ class WeatherDataRepository private constructor(
         val distance = earthRadius * c
         return distance < requiredDistanceKm
     }
+
 
 
 
