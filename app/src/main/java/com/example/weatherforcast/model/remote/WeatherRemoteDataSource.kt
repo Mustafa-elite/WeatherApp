@@ -5,12 +5,18 @@ import com.example.weatherforcast.model.data.CurrentWeatherResponse
 import com.example.weatherforcast.model.data.DailyWeatherResponse
 import com.example.weatherforcast.model.data.ThreeHoursForecastResponse
 import com.example.weatherforcast.model.data.WeatherInfo
+import com.google.android.gms.tasks.Task
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.FetchPlaceResponse
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse
+import com.google.android.libraries.places.api.net.PlacesClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
 
@@ -63,5 +69,20 @@ class WeatherRemoteDataSource (private val weatherService: WeatherService){
                 )
             }.first()
         }
+    }
+
+    fun getPlacesApiAutoComplete(query: String, placesClient: PlacesClient): Task<FindAutocompletePredictionsResponse> {
+        val request = FindAutocompletePredictionsRequest.builder()
+            .setQuery(query)
+            .build()
+
+        return placesClient.findAutocompletePredictions(request)
+
+    }
+
+    fun fetchPlaceById(placeId: String, placesClient: PlacesClient): Task<FetchPlaceResponse> {
+        val request= FetchPlaceRequest.newInstance(placeId, listOf(Place.Field.LAT_LNG, Place.Field.NAME))
+        return placesClient.fetchPlace(request)
+
     }
 }

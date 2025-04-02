@@ -3,6 +3,7 @@ package com.example.weatherforcast.homeScreen.ui
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,9 +27,10 @@ import com.example.weatherforcast.R
 import com.example.weatherforcast.helpyclasses.LocationUtil
 import com.example.weatherforcast.homeScreen.HomeViewModel
 import com.example.weatherforcast.homeScreen.HomeViewResponse
+import com.google.android.gms.maps.model.LatLng
 
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel){
+fun HomeScreen(homeViewModel: HomeViewModel, onLocationDeniedAction: () -> Unit){
     val context=LocalContext.current
     val weatherState by homeViewModel.weatherResponse.collectAsState()
     var location by remember { mutableStateOf<Location?>(null) }
@@ -47,6 +49,7 @@ fun HomeScreen(homeViewModel: HomeViewModel){
                 {throwable ->errorMessage=throwable.message})
         }
         else{
+            onLocationDeniedAction.invoke()
             //handle location denied(navigate to mapscreen to choose location manually)
 
         }
@@ -60,16 +63,30 @@ fun HomeScreen(homeViewModel: HomeViewModel){
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ){
+            if(homeViewModel.hasDefaultLocation()){
+                Log.i("TAG", "HomeScreen: no location permission but has default location")
+                homeViewModel.getDefaultLocation()
+            }
+            else{
+                locationPermissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION) )
+            }
 
-            locationPermissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION) )
         } else if(location==null){
+
             //location already granted but did not get location
-            LocationUtil.getLonLatLocation(context,
-                {loc->
-                    location=loc
-                    //homeViewModel.getRecentWeather(loc.longitude, loc.latitude)
-                },
-                {throwable ->errorMessage=throwable.message})
+            if(homeViewModel.hasDefaultLocation()){
+                Log.i("TAG", "HomeScreen: has location permission but has default location")
+                homeViewModel.getDefaultLocation()
+            }
+            else{
+                LocationUtil.getLonLatLocation(context,
+                    {loc->
+                        location=loc
+                        //homeViewModel.getRecentWeather(loc.longitude, loc.latitude)
+                    },
+                    {throwable ->errorMessage=throwable.message})
+            }
+
         }
     }
     LaunchedEffect(location) {

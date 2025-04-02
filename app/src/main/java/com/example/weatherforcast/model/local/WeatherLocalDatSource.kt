@@ -1,13 +1,14 @@
 package com.example.weatherforcast.model.local
 
-import com.example.weatherforcast.model.data.TemperatureUnit
 import com.example.weatherforcast.model.data.WeatherInfo
-import com.example.weatherforcast.model.data.WindSpeedUnit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
-class WeatherLocalDatSource (private val weatherDao: WeatherDao){
+class WeatherLocalDatSource (private val weatherDao: WeatherDao,
+                            private val sharedPref:SharedPrefInterface
+                             //private val sharedPreferences: SharedPreferences
+){
 
     suspend fun saveWeather(weatherInfo: WeatherInfo): Long {
         return withContext(Dispatchers.IO){
@@ -32,4 +33,27 @@ class WeatherLocalDatSource (private val weatherDao: WeatherDao){
         }
 
     }
+
+    suspend fun saveMainWeatherId(weatherId: Int) {
+        return withContext(Dispatchers.IO) {
+            sharedPref.addMainWeather(weatherId)
+
+        }
+    }
+
+    fun getMainWeatherId(): Int {
+        return sharedPref.getMainWeatherId()
+
+
+    }
+
+    suspend fun removeFavWeatherById(weatherId: Int) {
+        return withContext(Dispatchers.IO) {
+            if(getMainWeatherId()==weatherId){
+                sharedPref.removeMainWeather(weatherId)
+            }
+            weatherDao.removeWeatherById(weatherId)
+        }
+    }
+
 }

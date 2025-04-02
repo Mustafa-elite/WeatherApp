@@ -23,4 +23,7 @@ interface WeatherDao {
     @Query("SELECT * FROM WeatherInfo")
     fun getAllWeathers(): Flow<List<WeatherInfo>>
 
+    @Query("DELETE FROM WeatherInfo WHERE weatherId = :weatherId")
+    suspend fun removeWeatherById(weatherId: Int)
+
 }

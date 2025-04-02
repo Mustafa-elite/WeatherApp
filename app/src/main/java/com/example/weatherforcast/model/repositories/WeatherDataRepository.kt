@@ -1,20 +1,20 @@
 package com.example.weatherforcast.model.repositories
 
-import android.util.Log
 import com.example.weatherforcast.helpyclasses.DateManager
 import com.example.weatherforcast.model.data.TemperatureUnit
 import com.example.weatherforcast.model.data.WeatherInfo
 import com.example.weatherforcast.model.data.WindSpeedUnit
 import com.example.weatherforcast.model.local.WeatherLocalDatSource
 import com.example.weatherforcast.model.remote.WeatherRemoteDataSource
+import com.google.android.gms.tasks.Task
+import com.google.android.libraries.places.api.net.FetchPlaceResponse
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse
+import com.google.android.libraries.places.api.net.PlacesClient
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.withContext
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
@@ -40,11 +40,15 @@ class WeatherDataRepository private constructor(
         }
     }
 
-    suspend fun getWeatherInfo(lon: Double, lat: Double): Flow<WeatherInfo> = flow {
+    suspend fun getWeatherInfo(lon: Double, lat: Double,isMainLocation:Boolean ): Flow<WeatherInfo> = flow {
         val weatherList=localDataSource.getAllStoredWeatherData().first()
             for(storedWeather in weatherList){
                 if (isNearbyLocation(storedWeather.lon,storedWeather.lat,lon,lat,5.0)){
                     val validatedWeather=validateWeatherData(storedWeather)
+                    if(isMainLocation){
+                        localDataSource.saveMainWeatherId(validatedWeather.weatherId)
+
+                    }
                     //get from sharedPref
                     validatedWeather.convertWindSpeedUnit(WindSpeedUnit.KILOMETER_HOUR)
                     validatedWeather.convertTemperatureUnit(TemperatureUnit.CELSIUS)
@@ -58,8 +62,13 @@ class WeatherDataRepository private constructor(
         //get from sharedPref
         remoteWeatherDetails.convertWindSpeedUnit(WindSpeedUnit.KILOMETER_HOUR)
         remoteWeatherDetails.convertTemperatureUnit(TemperatureUnit.CELSIUS)
+
         emit(remoteWeatherDetails)
         localDataSource.saveWeather(remoteWeatherDetails)
+        if(isMainLocation){
+            localDataSource.saveMainWeatherId(remoteWeatherDetails.weatherId)
+
+        }
     }.flowOn(Dispatchers.IO)
 
     private suspend fun validateWeatherData(weatherInfo: WeatherInfo): WeatherInfo {
@@ -111,45 +120,6 @@ class WeatherDataRepository private constructor(
         }
     }
 
-    /*suspend fun getRemoteWeatherLonLat(lon: Double, lat: Double): Flow<WeatherInfo> =flow {
-        Log.i("TAG", "getRemoteWeatherLonLat:before getting data ")
-
-        combine(
-            remoteDataSource.getCurrentWeatherLonLat(lon,lat),
-            remoteDataSource.getDailyWeatherLonLat(lon,lat,9) ,
-            remoteDataSource.getThreeHoursForecastLonLat(lon,lat,12)
-        ){
-            currentWeather,dailyWeather,threeHoursWeather->
-
-
-            Log.i("TAG", "getRemoteWeatherLonLat: fetching data" )
-            WeatherInfo(
-                lon=currentWeather.coord.lon,
-                lat = currentWeather.coord.lat,
-                weatherDescription = currentWeather.weather[0].description,
-                windSpeed = currentWeather.wind.speed,
-                temp = currentWeather.main.temp,
-                feelsLike = currentWeather.main.feels_like,
-                minTemp = dailyWeather.list[0].temp.min,
-                maxTemp = dailyWeather.list[0].temp.max,
-                pressure = currentWeather.main.pressure,
-                humidityPercentage = currentWeather.main.humidity,
-                visibility = currentWeather.visibility,
-                cloudyPercentage = currentWeather.clouds.all,
-                calculationTime = currentWeather.dt,
-                timezone = currentWeather.timezone,
-                sunrise = currentWeather.sys.sunrise,
-                sunset = currentWeather.sys.sunset,
-                countryName = currentWeather.sys.country,
-                cityName = currentWeather.name,
-                daysForecast = dailyWeather.list,
-                threeHoursForecast = threeHoursWeather.list,
-                iconInfo = currentWeather.weather[0].iconRes
-            )
-        }.flowOn(Dispatchers.IO)
-            .collect { emit(it) }
-
-    }*/
     suspend fun getFavData(): Flow<List<WeatherInfo>> = flow {
         localDataSource.getAllStoredWeatherData().collect { weatherList ->
             val updatedList = weatherList.map { storedWeather ->
@@ -181,7 +151,33 @@ class WeatherDataRepository private constructor(
         return distance < requiredDistanceKm
     }
 
+    fun getAutoCompleteText(query: String, placesClient: PlacesClient): Task<FindAutocompletePredictionsResponse> {
+        return remoteDataSource.getPlacesApiAutoComplete(query,placesClient)
+    }
 
+    fun fetchGoogleMapPlaceById(placeId: String, placesClient: PlacesClient): Task<FetchPlaceResponse> {
+        return remoteDataSource.fetchPlaceById(placeId,placesClient)
 
+    }
 
+     fun getMainLocationId(): Int {
+        return localDataSource.getMainWeatherId()
+    }
+
+     fun getWeatherInfoById(weatherId: Int):Flow<WeatherInfo> = flow  {
+         val weatherInfo=validateWeatherData(localDataSource.getWeatherById(weatherId))
+         //get from shared pref
+         weatherInfo.convertWindSpeedUnit(WindSpeedUnit.KILOMETER_HOUR)
+         weatherInfo.convertTemperatureUnit(TemperatureUnit.CELSIUS)
+         emit(weatherInfo)
+    }.flowOn(Dispatchers.IO)
+
+    suspend fun removeFavWeatherById(weatherId: Int) {
+        return localDataSource.removeFavWeatherById(weatherId)
+    }
+
+    suspend fun setMainWeather(weatherInfo: WeatherInfo) {
+        localDataSource.saveMainWeatherId(weatherInfo.weatherId)
+
+    }
 }
