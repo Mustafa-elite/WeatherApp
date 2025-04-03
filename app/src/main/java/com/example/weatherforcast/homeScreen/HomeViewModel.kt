@@ -25,7 +25,7 @@ class HomeViewModel(val dataRepository: WeatherDataRepository):ViewModel() {
     fun getRecentWeather(lon: Double, lat: Double) {
         viewModelScope.launch {
             try {
-                dataRepository.getWeatherInfo(lon,lat,true)
+                dataRepository.getWeatherInfo(lon,lat, isMainLocation = true, isFavourite = true)
                     .catch {
                         Log.i("TAG", "getRecentWeather:"+it.message)
                         _weatherHomeViewResponse.emit(HomeViewResponse.Failure(it)) }

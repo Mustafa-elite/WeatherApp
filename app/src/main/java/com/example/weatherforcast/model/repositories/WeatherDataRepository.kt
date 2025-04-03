@@ -2,6 +2,7 @@ package com.example.weatherforcast.model.repositories
 
 import com.example.weatherforcast.helpyclasses.DateManager
 import com.example.weatherforcast.model.data.TemperatureUnit
+import com.example.weatherforcast.model.data.WeatherAlert
 import com.example.weatherforcast.model.data.WeatherInfo
 import com.example.weatherforcast.model.data.WindSpeedUnit
 import com.example.weatherforcast.model.local.WeatherLocalDatSource
@@ -40,7 +41,7 @@ class WeatherDataRepository private constructor(
         }
     }
 
-    suspend fun getWeatherInfo(lon: Double, lat: Double,isMainLocation:Boolean ): Flow<WeatherInfo> = flow {
+    suspend fun getWeatherInfo(lon: Double, lat: Double,isMainLocation:Boolean,isFavourite:Boolean ): Flow<WeatherInfo> = flow {
         val weatherList=localDataSource.getAllStoredWeatherData().first()
             for(storedWeather in weatherList){
                 if (isNearbyLocation(storedWeather.lon,storedWeather.lat,lon,lat,5.0)){
@@ -64,11 +65,13 @@ class WeatherDataRepository private constructor(
         remoteWeatherDetails.convertTemperatureUnit(TemperatureUnit.CELSIUS)
 
         emit(remoteWeatherDetails)
-        localDataSource.saveWeather(remoteWeatherDetails)
-        if(isMainLocation){
-            localDataSource.saveMainWeatherId(remoteWeatherDetails.weatherId)
-
+        if(isFavourite){
+            val weatherId=localDataSource.saveWeather(remoteWeatherDetails)
+            if(isMainLocation){
+                localDataSource.saveMainWeatherId(weatherId.toInt())
+            }
         }
+
     }.flowOn(Dispatchers.IO)
 
     private suspend fun validateWeatherData(weatherInfo: WeatherInfo): WeatherInfo {
@@ -179,5 +182,22 @@ class WeatherDataRepository private constructor(
     suspend fun setMainWeather(weatherInfo: WeatherInfo) {
         localDataSource.saveMainWeatherId(weatherInfo.weatherId)
 
+    }
+
+    suspend fun getAlertsWeather() : Flow<List<WeatherAlert>> {
+        return localDataSource.getAlertsWeather()
+    }
+
+    suspend fun addAlertWeather(weatherAlert: WeatherAlert): Long {
+        return localDataSource.addAlertWeather(weatherAlert)
+    }
+
+
+    suspend fun removeAlertWeatherById(weatherAlertId: Int) {
+        localDataSource.removeAlertWeatherById(weatherAlertId)
+    }
+
+    suspend fun getAlertWeatherById(alertId: Int): WeatherAlert {
+        return localDataSource.getWeatherAlertById(alertId)
     }
 }

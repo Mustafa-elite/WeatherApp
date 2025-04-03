@@ -1,5 +1,6 @@
 package com.example.weatherforcast.model.data
 
+import android.content.Context
 import android.os.Parcelable
 import android.util.Log
 import androidx.compose.ui.graphics.painter.Painter
@@ -9,6 +10,7 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.example.weatherforcast.R
 import com.example.weatherforcast.helpyclasses.DateManager
+import com.example.weatherforcast.helpyclasses.LocationUtil
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 
@@ -146,6 +148,12 @@ class WeatherInfo(
         maxTemp=response.list[0].temp.max
         daysForecast=response.list
 
+    }
+
+    fun updateCityAndCountryGeocoder(context: Context) {
+        val (city, country) = LocationUtil.getCityAndCountry(lat, lon, context)
+        cityName = city
+        countryName = country
     }
 }
 enum class TemperatureUnit(val unitSymbol: String){

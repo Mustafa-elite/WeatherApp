@@ -1,5 +1,6 @@
 package com.example.weatherforcast.model.local
 
+import com.example.weatherforcast.model.data.WeatherAlert
 import com.example.weatherforcast.model.data.WeatherInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +13,9 @@ class WeatherLocalDatSource (private val weatherDao: WeatherDao,
 
     suspend fun saveWeather(weatherInfo: WeatherInfo): Long {
         return withContext(Dispatchers.IO){
-            weatherDao.insertWeatherInfo(weatherInfo)
+            val res=weatherDao.insertWeatherInfo(weatherInfo)
+            //Log.i("TAG", "saveWeather: id:"+weatherInfo.weatherId+"returned:"+res)
+            res
         }
     }
     suspend fun updateWeather(weatherInfo: WeatherInfo){
@@ -24,6 +27,7 @@ class WeatherLocalDatSource (private val weatherDao: WeatherDao,
     suspend fun getWeatherById(weatherId:Int): WeatherInfo {
         return withContext(Dispatchers.IO){
             weatherDao.getWeatherById(weatherId)
+
         }
     }
 
@@ -54,6 +58,33 @@ class WeatherLocalDatSource (private val weatherDao: WeatherDao,
             }
             weatherDao.removeWeatherById(weatherId)
         }
+    }
+
+    suspend fun getAlertsWeather(): Flow<List<WeatherAlert>> {
+        return withContext(Dispatchers.IO){
+            weatherDao.getAlertWeathers()
+        }
+
+    }
+
+    suspend fun addAlertWeather(weatherAlert: WeatherAlert) :Long{
+        return withContext(Dispatchers.IO){
+            weatherDao.addAlertWeather(weatherAlert)
+        }
+    }
+
+    suspend fun removeAlertWeatherById(weatherAlertId: Int) {
+        return withContext(Dispatchers.IO){
+            weatherDao.removeWeatherAlertById(weatherAlertId)
+        }
+
+    }
+
+    suspend fun getWeatherAlertById(alertId: Int):WeatherAlert {
+        return withContext(Dispatchers.IO){
+            weatherDao.getAlertWeatherById(alertId)
+        }
+
     }
 
 }

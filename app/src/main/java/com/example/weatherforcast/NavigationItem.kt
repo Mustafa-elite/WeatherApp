@@ -23,6 +23,7 @@ sealed class Screen(val rout: String) {
     object Setting: Screen("setting_screen")
 
     object Map: Screen("map_screen")
+    object AlertMaker:Screen("AlertMaker_Screen")
 
     data object Details : Screen("details_screen/{weatherInfo}") {
         fun createRoute(weatherInfo: String): String {

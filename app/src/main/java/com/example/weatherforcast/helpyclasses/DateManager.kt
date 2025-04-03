@@ -58,7 +58,15 @@ class DateManager {
             val currentUtcTime = System.currentTimeMillis() / 1000
             return currentUtcTime>=seconds
         }
+        fun getLocalDateTimeFromSeconds(seconds: Long): String {
 
+            val date = Date(seconds * 1000)
+
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            dateFormat.timeZone = TimeZone.getDefault()
+
+            return dateFormat.format(date)
+        }
     }
 
 }

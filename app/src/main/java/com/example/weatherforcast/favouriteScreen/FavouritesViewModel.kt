@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-class FavouritesViewModel (val dataRepository: WeatherDataRepository): ViewModel(){
+class FavouritesViewModel (private val dataRepository: WeatherDataRepository): ViewModel(){
 
     private val _favWeatherResponse:MutableStateFlow<FavViewResponse> = MutableStateFlow(FavViewResponse.Loading)
     val favWeatherResponse=_favWeatherResponse.asStateFlow()
@@ -43,7 +43,7 @@ class FavouritesViewModel (val dataRepository: WeatherDataRepository): ViewModel
     fun addFavWeather(lon:Double,lat:Double){
         viewModelScope.launch {
             try {
-                dataRepository.getWeatherInfo(lon,lat,false)
+                dataRepository.getWeatherInfo(lon,lat, isMainLocation = false, isFavourite = true)
                     .catch {
                         Log.i("TAG", "getRecentWeather:"+it.message)
                         _favWeatherResponse.emit(FavViewResponse.Failure(it)) }

@@ -38,6 +38,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.weatherforcast.AlarmScreen.AlertMakerViewModelFactory
+import com.example.weatherforcast.AlarmScreen.AlertViewModelFactory
+import com.example.weatherforcast.AlarmScreen.ui.AlertMakerScreen
+import com.example.weatherforcast.AlarmScreen.ui.AlertsScreen
 import com.example.weatherforcast.favouriteScreen.FavouritesViewModel
 import com.example.weatherforcast.favouriteScreen.FavouritesViewModelFactory
 import com.example.weatherforcast.favouriteScreen.ui.FavouritesScreen
@@ -176,7 +180,17 @@ private fun WeatherApp() {
                 )
             }
             composable(route = Screen.Alerts.rout) {
-                ALertsScreen()
+                AlertsScreen(
+                    viewModel(
+                    factory = AlertViewModelFactory(
+                        WeatherDataRepository.getInstance(
+                            WeatherRemoteDataSource(RetrofitHelper.weatherService),
+                            WeatherLocalDatSource(
+                                WeatherDatabase.getInstance(LocalContext.current).getWeatherDao(),
+                                SharedPrefImp(LocalContext.current.getSharedPreferences("weather_prefs", Context.MODE_PRIVATE))
+                            )
+                        )
+                    )),{navController.navigate(Screen.AlertMaker.rout)})
             }
             composable(route = Screen.Setting.rout) {
                 SettingScreen()
@@ -211,6 +225,19 @@ private fun WeatherApp() {
                 weatherInfo?.let {
                     WeatherDetailsScreen(it)
                 }
+            }
+            composable(route = Screen.AlertMaker.rout) {
+                AlertMakerScreen(viewModel(
+                    factory = AlertMakerViewModelFactory(
+                        WeatherDataRepository.getInstance(
+                            WeatherRemoteDataSource(RetrofitHelper.weatherService),
+                            WeatherLocalDatSource(
+                                WeatherDatabase.getInstance(LocalContext.current).getWeatherDao(),
+                                SharedPrefImp(LocalContext.current.getSharedPreferences("weather_prefs", Context.MODE_PRIVATE))
+                            )
+                        )
+                    )
+                ),{navController.popBackStack()})
             }
         }
         BackHandler(
@@ -279,20 +306,6 @@ fun BottomNavigationBar(navController: NavHostController) {
     }
 }
 
-
-@Composable
-fun ALertsScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Cart Screen",
-            style = MaterialTheme.typography.headlineLarge
-        )
-    }
-}
 
 @Composable
 fun SettingScreen() {

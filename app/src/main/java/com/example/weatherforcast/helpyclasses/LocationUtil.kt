@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.location.Location
 import android.os.Looper
 import android.util.Log
@@ -15,6 +16,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import java.util.Locale
 
 class LocationUtil {
     companion object{
@@ -63,6 +65,22 @@ class LocationUtil {
             }
 
 
+        }
+
+        fun getCityAndCountry(lat: Double, lon: Double, context: Context): Pair<String, String> {
+            val geocoder = Geocoder(context, Locale.getDefault())
+            return try {
+                val addresses = geocoder.getFromLocation(lat, lon, 1)
+                if (!addresses.isNullOrEmpty()) {
+                    val city = addresses[0].locality ?: "Unknown City"
+                    val country = addresses[0].countryName ?: "Unknown Country"
+                    city to country
+                } else {
+                    "Unknown City" to "Unknown Country"
+                }
+            } catch (e: Exception) {
+                "Unknown City" to "Unknown Country"
+            }
         }
     }
 
