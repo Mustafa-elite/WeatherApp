@@ -1,7 +1,6 @@
-package com.example.weatherforcast
+package com.example.weatherforcast.MainApp
 
 import android.app.Application
-import com.yariksoffice.lingver.Lingver
 
 class LanguageApplication: Application() {
     override fun onCreate() {

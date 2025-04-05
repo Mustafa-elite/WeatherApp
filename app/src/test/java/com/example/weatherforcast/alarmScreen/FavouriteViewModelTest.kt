@@ -18,7 +18,7 @@ import org.junit.runner.RunWith
 import org.hamcrest.Matchers.`is`
 
 @RunWith(AndroidJUnit4::class)
-class AlertViewModelTest() {
+class FavouriteViewModelTest() {
 
     lateinit var viewModel: FavouritesViewModel
     lateinit var repo: WeatherDataRepository
