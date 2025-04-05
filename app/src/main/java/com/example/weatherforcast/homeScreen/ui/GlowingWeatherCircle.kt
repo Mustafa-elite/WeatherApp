@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -68,7 +69,7 @@ fun GlowingWeatherCircle(sizeDP: Dp =300.dp, weatherInfo: WeatherInfo) {
             Spacer(Modifier.height(10.dp))
             Text(
                 text = buildAnnotatedString {
-                    append("Feels Like ")
+                    append(stringResource(R.string.feels_like))
                     withStyle(style = SpanStyle(fontSize = 14.sp)) {
                         append("®")
 
@@ -118,7 +119,7 @@ fun GlowingWeatherCircle(sizeDP: Dp =300.dp, weatherInfo: WeatherInfo) {
                         modifier = Modifier
                             .size(15.dp)
                             .align(Alignment.CenterVertically),
-                        contentDescription = "Lowest Temperature"
+                        contentDescription = stringResource(R.string.lowest_temperature)
                     )
                     Text(
                         text = buildAnnotatedString {
@@ -185,7 +186,7 @@ fun GlowingWeatherCircle(sizeDP: Dp =300.dp, weatherInfo: WeatherInfo) {
                         modifier = Modifier
                             .size(15.dp)
                             .align(Alignment.CenterVertically),
-                        contentDescription = "highest Temperature"
+                        contentDescription = stringResource(R.string.highest_temperature)
                     )
 
                 }
@@ -205,7 +206,7 @@ fun GlowingWeatherCircle(sizeDP: Dp =300.dp, weatherInfo: WeatherInfo) {
                             modifier = Modifier
                                 .size(15.dp)
                                 .align(Alignment.CenterVertically),
-                            contentDescription = "Humedity"
+                            contentDescription = stringResource(R.string.humidity)
                         )
                         Text(
                             text = buildAnnotatedString {
@@ -223,7 +224,7 @@ fun GlowingWeatherCircle(sizeDP: Dp =300.dp, weatherInfo: WeatherInfo) {
                             modifier = Modifier
                                 .size(15.dp)
                                 .align(Alignment.CenterVertically),
-                            contentDescription = "wind speed"
+                            contentDescription = stringResource(R.string.wind_speed)
                         )
                         Text(
                             text = buildAnnotatedString {
@@ -241,7 +242,7 @@ fun GlowingWeatherCircle(sizeDP: Dp =300.dp, weatherInfo: WeatherInfo) {
                             modifier = Modifier
                                 .size(15.dp)
                                 .align(Alignment.CenterVertically),
-                            contentDescription = "cloud percentage"
+                            contentDescription = stringResource(R.string.cloud_percentage)
                         )
                         Text(
                             text = buildAnnotatedString {
@@ -257,7 +258,7 @@ fun GlowingWeatherCircle(sizeDP: Dp =300.dp, weatherInfo: WeatherInfo) {
             }
             Image(
                 painter = painterResource(weatherInfo.iconInfo),
-                contentDescription = "wheather image",
+                contentDescription = stringResource(R.string.weather_image),
                 Modifier.size(150.dp)
             )
 

@@ -1,16 +1,12 @@
 package com.example.weatherforcast.helpyclasses
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.os.Looper
-import android.util.Log
-import androidx.core.app.ActivityCompat
+import com.example.weatherforcast.R
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -39,7 +35,7 @@ class LocationUtil {
                         fusedLocation.removeLocationUpdates(this)
                     }
                     else{
-                        fetchLastCachedLocation(fusedLocation,onSuccess,onFailure)
+                        fetchLastCachedLocation(context,fusedLocation,onSuccess,onFailure)
                     }
                 }
             }
@@ -48,16 +44,19 @@ class LocationUtil {
         }
 
         @SuppressLint("MissingPermission")
-        private fun fetchLastCachedLocation(fusedLocation: FusedLocationProviderClient,
-                                            onSuccess: (Location) -> Unit,
-                                            onFailure: (Throwable) -> Unit) {
+        private fun fetchLastCachedLocation(
+            context: Context,
+            fusedLocation: FusedLocationProviderClient,
+            onSuccess: (Location) -> Unit,
+            onFailure: (Throwable) -> Unit
+        ) {
 
             fusedLocation.lastLocation.addOnSuccessListener {location->
                 if(location!=null){
                     onSuccess(location)
                 }
                 else{
-                    onFailure(NullPointerException("Cant get the Location"))
+                    onFailure(NullPointerException(context.getString(R.string.cant_get_location)))
                 }
 
             }.addOnFailureListener{
@@ -72,14 +71,14 @@ class LocationUtil {
             return try {
                 val addresses = geocoder.getFromLocation(lat, lon, 1)
                 if (!addresses.isNullOrEmpty()) {
-                    val city = addresses[0].locality ?: "Unknown City"
-                    val country = addresses[0].countryName ?: "Unknown Country"
+                    val city = addresses[0].locality ?: context.getString(R.string.unknown_city)
+                    val country = addresses[0].countryName ?: context.getString(R.string.unknown_country)
                     city to country
                 } else {
-                    "Unknown City" to "Unknown Country"
+                    context.getString(R.string.unknown_city) to context.getString(R.string.unknown_country)
                 }
             } catch (e: Exception) {
-                "Unknown City" to "Unknown Country"
+                context.getString(R.string.unknown_city) to context.getString(R.string.unknown_country)
             }
         }
     }

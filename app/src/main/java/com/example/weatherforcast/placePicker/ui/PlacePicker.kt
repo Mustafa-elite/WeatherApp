@@ -10,6 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.weatherforcast.R
 import com.example.weatherforcast.placePicker.PlacesViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -46,7 +48,7 @@ fun PlacePicker(placesViewModel: PlacesViewModel,onConfirm:(LatLng) -> Unit) {
             selectedLocation?.let {
                 Marker(
                     state = MarkerState(position =it),
-                    title = addressName ?: "selected Location",
+                    title = addressName ?: stringResource(R.string.selected_location),
                     draggable = true,
                     onClick = {false}
                 )
@@ -58,7 +60,7 @@ fun PlacePicker(placesViewModel: PlacesViewModel,onConfirm:(LatLng) -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Text("Confirm Location")
+            Text(stringResource(R.string.confirm_location))
         }
     }
 

@@ -5,7 +5,9 @@ import com.example.weatherforcast.model.data.TemperatureUnit
 import com.example.weatherforcast.model.data.WeatherAlert
 import com.example.weatherforcast.model.data.WeatherInfo
 import com.example.weatherforcast.model.data.WindSpeedUnit
+import com.example.weatherforcast.model.local.IWeatherLocalDatSource
 import com.example.weatherforcast.model.local.WeatherLocalDatSource
+import com.example.weatherforcast.model.remote.IWeatherRemoteDataSource
 import com.example.weatherforcast.model.remote.WeatherRemoteDataSource
 import com.google.android.gms.tasks.Task
 import com.google.android.libraries.places.api.net.FetchPlaceResponse
@@ -22,15 +24,16 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 class WeatherDataRepository private constructor(
-    private val remoteDataSource: WeatherRemoteDataSource,
-    private val localDataSource: WeatherLocalDatSource) {
+    private val remoteDataSource: IWeatherRemoteDataSource,
+    private val localDataSource: IWeatherLocalDatSource
+) : IWeatherDataRepository {
 
 
     companion object{
         private var dataRepository: WeatherDataRepository? =null
         fun getInstance(
-            weatherRemoteDataSource: WeatherRemoteDataSource,
-            localDataSource: WeatherLocalDatSource
+            weatherRemoteDataSource: IWeatherRemoteDataSource,
+            localDataSource: IWeatherLocalDatSource
         ):WeatherDataRepository{
             return dataRepository ?: synchronized(this){
                 val temp=WeatherDataRepository(weatherRemoteDataSource,
@@ -41,7 +44,7 @@ class WeatherDataRepository private constructor(
         }
     }
 
-    suspend fun getWeatherInfo(lon: Double, lat: Double,isMainLocation:Boolean,isFavourite:Boolean ): Flow<WeatherInfo> = flow {
+    override suspend fun getWeatherInfo(lon: Double, lat: Double, isMainLocation:Boolean, isFavourite:Boolean ): Flow<WeatherInfo> = flow {
         val weatherList=localDataSource.getAllStoredWeatherData().first()
             for(storedWeather in weatherList){
                 if (isNearbyLocation(storedWeather.lon,storedWeather.lat,lon,lat,5.0)){
@@ -51,8 +54,9 @@ class WeatherDataRepository private constructor(
 
                     }
                     //get from sharedPref
-                    validatedWeather.convertWindSpeedUnit(WindSpeedUnit.KILOMETER_HOUR)
-                    validatedWeather.convertTemperatureUnit(TemperatureUnit.CELSIUS)
+                    validatedWeather.convertWindSpeedUnit(localDataSource.getSpeedUnit())
+                    validatedWeather.convertTemperatureUnit(localDataSource.getTemperatureUnit())
+                    println("test")
                     emit(validatedWeather)
                     localDataSource.updateWeather(validatedWeather)
                     return@flow
@@ -61,8 +65,8 @@ class WeatherDataRepository private constructor(
         val remoteWeatherDetails=remoteDataSource.getWeatherDetails(lon,lat)
 
         //get from sharedPref
-        remoteWeatherDetails.convertWindSpeedUnit(WindSpeedUnit.KILOMETER_HOUR)
-        remoteWeatherDetails.convertTemperatureUnit(TemperatureUnit.CELSIUS)
+        remoteWeatherDetails.convertWindSpeedUnit(localDataSource.getSpeedUnit())
+        remoteWeatherDetails.convertTemperatureUnit(localDataSource.getTemperatureUnit())
 
         emit(remoteWeatherDetails)
         if(isFavourite){
@@ -123,12 +127,12 @@ class WeatherDataRepository private constructor(
         }
     }
 
-    suspend fun getFavData(): Flow<List<WeatherInfo>> = flow {
+    override suspend fun getFavData(): Flow<List<WeatherInfo>> = flow {
         localDataSource.getAllStoredWeatherData().collect { weatherList ->
             val updatedList = weatherList.map { storedWeather ->
                 val validatedWeather = validateWeatherData(storedWeather).apply {
-                    convertWindSpeedUnit(WindSpeedUnit.KILOMETER_HOUR)
-                    convertTemperatureUnit(TemperatureUnit.CELSIUS)
+                    convertWindSpeedUnit(localDataSource.getSpeedUnit())
+                    convertTemperatureUnit(localDataSource.getTemperatureUnit())
                 }
 
                 if (validatedWeather != storedWeather) {
@@ -151,53 +155,78 @@ class WeatherDataRepository private constructor(
                 sin(dLon / 2) * sin(dLon / 2)
         val c = 2 * atan2(sqrt(a), sqrt(1 - a))
         val distance = earthRadius * c
+        println(distance < requiredDistanceKm)
         return distance < requiredDistanceKm
     }
 
-    fun getAutoCompleteText(query: String, placesClient: PlacesClient): Task<FindAutocompletePredictionsResponse> {
+    override fun getAutoCompleteText(query: String, placesClient: PlacesClient): Task<FindAutocompletePredictionsResponse> {
         return remoteDataSource.getPlacesApiAutoComplete(query,placesClient)
     }
 
-    fun fetchGoogleMapPlaceById(placeId: String, placesClient: PlacesClient): Task<FetchPlaceResponse> {
+    override fun fetchGoogleMapPlaceById(placeId: String, placesClient: PlacesClient): Task<FetchPlaceResponse> {
         return remoteDataSource.fetchPlaceById(placeId,placesClient)
 
     }
 
-     fun getMainLocationId(): Int {
+     override fun getMainLocationId(): Int {
         return localDataSource.getMainWeatherId()
     }
 
-     fun getWeatherInfoById(weatherId: Int):Flow<WeatherInfo> = flow  {
+     override fun getWeatherInfoById(weatherId: Int):Flow<WeatherInfo> = flow  {
          val weatherInfo=validateWeatherData(localDataSource.getWeatherById(weatherId))
          //get from shared pref
-         weatherInfo.convertWindSpeedUnit(WindSpeedUnit.KILOMETER_HOUR)
-         weatherInfo.convertTemperatureUnit(TemperatureUnit.CELSIUS)
+         weatherInfo.convertWindSpeedUnit(localDataSource.getSpeedUnit())
+         weatherInfo.convertTemperatureUnit(localDataSource.getTemperatureUnit())
          emit(weatherInfo)
     }.flowOn(Dispatchers.IO)
 
-    suspend fun removeFavWeatherById(weatherId: Int) {
+    override suspend fun removeFavWeatherById(weatherId: Int) {
         return localDataSource.removeFavWeatherById(weatherId)
     }
 
-    suspend fun setMainWeather(weatherInfo: WeatherInfo) {
+    override suspend fun setMainWeather(weatherInfo: WeatherInfo) {
         localDataSource.saveMainWeatherId(weatherInfo.weatherId)
 
     }
 
-    suspend fun getAlertsWeather() : Flow<List<WeatherAlert>> {
+    override suspend fun getAlertsWeather() : Flow<List<WeatherAlert>> {
         return localDataSource.getAlertsWeather()
     }
 
-    suspend fun addAlertWeather(weatherAlert: WeatherAlert): Long {
+    override suspend fun addAlertWeather(weatherAlert: WeatherAlert): Long {
         return localDataSource.addAlertWeather(weatherAlert)
     }
-
-
-    suspend fun removeAlertWeatherById(weatherAlertId: Int) {
+    override suspend fun removeAlertWeatherById(weatherAlertId: Int) {
         localDataSource.removeAlertWeatherById(weatherAlertId)
     }
 
-    suspend fun getAlertWeatherById(alertId: Int): WeatherAlert {
+    override suspend fun getAlertWeatherById(alertId: Int): WeatherAlert {
         return localDataSource.getWeatherAlertById(alertId)
+    }
+
+    override fun getLanguage(): String {
+        return localDataSource.getLanguage()
+    }
+
+    override fun getTemperatureUnit(): TemperatureUnit {
+        return localDataSource.getTemperatureUnit()
+
+    }
+
+    override fun getSpeedUnit(): WindSpeedUnit {
+        return localDataSource.getSpeedUnit()
+    }
+
+    override suspend fun setLanguage(lang: String) {
+        localDataSource.setLanguage(lang)
+    }
+
+    override suspend fun setTemperatureUnit(unit: TemperatureUnit) {
+        localDataSource.setTemperatureUnit(unit)
+
+    }
+
+    override suspend fun setSpeedUnit(unit: WindSpeedUnit) {
+        localDataSource.setSpeedUnit(unit)
     }
 }

@@ -35,9 +35,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.weatherforcast.R
 import com.example.weatherforcast.model.data.WeatherInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,7 +72,7 @@ fun WeatherItem(
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete",
+                    contentDescription = stringResource(R.string.delete),
                     tint = Color.Red,
                     modifier = Modifier.size(24.dp)
                 )
@@ -93,7 +95,7 @@ fun WeatherItem(
 
                     Image(
                         painter = painterResource(id = weatherInfo.getBackgroundImageRes()),
-                        contentDescription = "Weather Background",
+                        contentDescription = stringResource(R.string.weather_background),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.matchParentSize()
                     )
@@ -133,7 +135,7 @@ fun WeatherItem(
                         ) {
                             Icon(
                                 painter = painterResource(weatherInfo.iconInfo),
-                                contentDescription = "Weather Icon",
+                                contentDescription = stringResource(R.string.weather_icon),
                                 tint = Color.White,
                                 modifier = Modifier.size(32.dp)
                             )
@@ -157,7 +159,7 @@ fun WeatherItem(
                                     modifier = Modifier
                                         .clickable { onDelete(weatherInfo) },
                                     imageVector = Icons.Default.Close,
-                                    contentDescription = "Delete",
+                                    contentDescription = stringResource(R.string.delete),
                                     tint = Color.Red
                                 )
                                 Spacer(Modifier.height(10.dp))
@@ -165,7 +167,7 @@ fun WeatherItem(
                                 Icon(
                                     modifier = Modifier.clickable { onSetDefault(weatherInfo) },
                                     imageVector = if (isDefault) Icons.Default.Star else Icons.Outlined.Star,
-                                    contentDescription = "Set as Default",
+                                    contentDescription = stringResource(R.string.set_as_default),
                                     tint = if (isDefault) Color.Yellow else Color.White
                                 )
                             }

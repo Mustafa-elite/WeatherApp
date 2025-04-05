@@ -8,33 +8,34 @@ import java.util.TimeZone
 
 class DateManager {
     companion object{
-        fun SecondsToWrittenDate(seconds:Long): String {
-            val date= Date(seconds*1000)
-            val dateFormat=SimpleDateFormat("EEE,dd MMM", Locale.ENGLISH)
+        fun secondsToWrittenDate(secondsUTC: Long, timezone: Int): String {
+            val date= Date((secondsUTC+timezone)*1000)
+            val dateFormat=SimpleDateFormat("EEE,dd MMM", Locale.getDefault())
             dateFormat.timeZone= TimeZone.getTimeZone("UTC")
             return(dateFormat.format(date))
         }
 
-        fun getTimeFromSeconds(seconds: Long): String {
-            val date=Date(seconds*1000)
-            val timeFormat=SimpleDateFormat("hh:mm a", Locale.ENGLISH)
+        fun getTimeFromSeconds(secondsUTC: Long, timezone: Int): String {
+            val date=Date((secondsUTC+timezone)*1000)
+            val timeFormat=SimpleDateFormat("hh:mm a", Locale.getDefault())
             timeFormat.timeZone= TimeZone.getTimeZone("UTC")
             return timeFormat.format(date)
         }
 
-        fun getDayMonthFromSeconds(seconds: Long): String {
-            val date=Date(seconds*1000)
-            val timeFormat=SimpleDateFormat("dd/MM", Locale.ENGLISH)
+        fun getDayMonthFromSeconds(secondsUTC: Long, timezone: Int): String {
+            val date=Date((secondsUTC+timezone)*1000)
+            val timeFormat=SimpleDateFormat("dd/MM", Locale.getDefault())
             timeFormat.timeZone= TimeZone.getTimeZone("UTC")
             return timeFormat.format(date)
 
 
         }
-        fun getDayFromSeconds(seconds: Long): String {
-            val date = Date(seconds * 1000)
-            val timeFormat = SimpleDateFormat("EEE", Locale.ENGLISH)
+        fun getDayFromSeconds(secondsUTC: Long, timezoneShiftSeconds: Int): String {
+            // Apply the time shift to the UTC seconds
+            val date = Date((secondsUTC + timezoneShiftSeconds) * 1000)
+
+            val timeFormat = SimpleDateFormat("EEE", Locale.getDefault())
             timeFormat.timeZone = TimeZone.getTimeZone("UTC")
-
 
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
             val today = calendar.get(Calendar.DAY_OF_YEAR)
@@ -43,20 +44,24 @@ class DateManager {
             calendar.time = date
             val givenDay = calendar.get(Calendar.DAY_OF_YEAR)
             val givenYear = calendar.get(Calendar.YEAR)
-            return if (givenDay == today && givenYear == year) "Today" else timeFormat.format(date)
-        }
-        fun isNightTime(currentTime: Long, sunrise: Long, sunset: Long): Boolean {
-            return currentTime < sunrise || currentTime > sunset
-        }
-        fun hasDurationPassed(timeSeconds: Long, days: Int = 0, hours: Int = 0, minutes: Int = 0): Boolean {
-            val currentUtcTime = System.currentTimeMillis() / 1000
-            val timeDifference = (days * 24 * 3600) + (hours * 3600) + (minutes * 60)
-            return currentUtcTime >= (timeSeconds + timeDifference)
+
+            return if (givenDay == today && givenYear == year){
+                if (Locale.getDefault()==Locale("en")) "Today" else "اليوم"
+            } else timeFormat.format(date)
         }
 
-        fun hasTimePassed(seconds: Long): Boolean {
+        fun isNightTime(currentTimeUTC: Long, sunrise: Long, sunset: Long): Boolean {
+            return currentTimeUTC < sunrise || currentTimeUTC > sunset
+        }
+        fun hasDurationPassed(timeSecondsUTC: Long, days: Int = 0, hours: Int = 0, minutes: Int = 0): Boolean {
             val currentUtcTime = System.currentTimeMillis() / 1000
-            return currentUtcTime>=seconds
+            val timeDifference = (days * 24L * 3600) + (hours * 3600L) + (minutes * 60L)
+            return currentUtcTime >= (timeSecondsUTC + timeDifference)
+        }
+
+        fun hasTimePassed(secondsUTC: Long): Boolean {
+            val currentUtcTime = System.currentTimeMillis() / 1000
+            return currentUtcTime>=secondsUTC
         }
         fun getLocalDateTimeFromSeconds(seconds: Long): String {
 
@@ -64,9 +69,17 @@ class DateManager {
 
             val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
             dateFormat.timeZone = TimeZone.getDefault()
-
             return dateFormat.format(date)
         }
-    }
+        fun getCurrentTime(timezoneShiftSeconds: Int): String {
+            val currentUtcTimeMillis = System.currentTimeMillis()
+            val shiftedTimeMillis = currentUtcTimeMillis + timezoneShiftSeconds * 1000L
+            val date = Date(shiftedTimeMillis)
 
+            val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+            timeFormat.timeZone = TimeZone.getTimeZone("UTC")
+            return timeFormat.format(date)
+        }
+
+    }
 }

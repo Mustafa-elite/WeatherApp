@@ -156,6 +156,7 @@ class WeatherInfo(
         countryName = country
     }
 }
+
 enum class TemperatureUnit(val unitSymbol: String){
     KELVIN("K"),
     CELSIUS("C"),

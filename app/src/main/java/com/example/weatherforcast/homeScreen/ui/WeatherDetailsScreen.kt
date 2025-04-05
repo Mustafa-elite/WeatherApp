@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,7 +41,7 @@ fun WeatherDetailsScreen(weatherInfo: WeatherInfo = WeatherInfo()){
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(weatherInfo.getBackgroundImageRes()),
-            contentDescription = "background image",
+            contentDescription = stringResource(R.string.background_image),
             contentScale = ContentScale.Crop,
             modifier = Modifier.matchParentSize()
         )
@@ -51,7 +52,7 @@ fun WeatherDetailsScreen(weatherInfo: WeatherInfo = WeatherInfo()){
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = stringResource(R.string.today),
@@ -59,11 +60,19 @@ fun WeatherDetailsScreen(weatherInfo: WeatherInfo = WeatherInfo()){
                         color = Color.White
                     )
                     Text(
-                        text = DateManager.SecondsToWrittenDate(
-                            (System.currentTimeMillis() / 1000) + weatherInfo.timezone
+                        text = DateManager.secondsToWrittenDate(
+                            (System.currentTimeMillis() / 1000) , weatherInfo.timezone
                         ),
                         color = Color.White
                     )
+                }
+                Column( ) {
+                    Text(
+                        text = DateManager.getCurrentTime(weatherInfo.timezone),
+                        fontSize = 20.sp,
+                        color = Color.White
+                    )
+
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(text = weatherInfo.cityName, fontSize = 20.sp, color = Color.White)
@@ -74,14 +83,16 @@ fun WeatherDetailsScreen(weatherInfo: WeatherInfo = WeatherInfo()){
             GlowingWeatherCircle(weatherInfo = weatherInfo)
             Spacer(Modifier.height(20.dp))
             Row(
-                Modifier.fillMaxWidth().background(Color.Black.copy(alpha = 0.3f)),
+                Modifier
+                    .fillMaxWidth()
+                    .background(Color.Black.copy(alpha = 0.3f)),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Text(buildAnnotatedString {
                     append(stringResource(R.string.sunrise))
                     append(
                         DateManager.getTimeFromSeconds(
-                            weatherInfo.sunrise + weatherInfo.timezone
+                            weatherInfo.sunrise , weatherInfo.timezone
                         )
                     )
                 }, color = Color.White)
@@ -89,8 +100,7 @@ fun WeatherDetailsScreen(weatherInfo: WeatherInfo = WeatherInfo()){
                     append(stringResource(R.string.sunset))
                     append(
                         DateManager.getTimeFromSeconds(
-                            weatherInfo.sunset + weatherInfo.timezone
-                        )
+                            weatherInfo.sunset , weatherInfo.timezone)
                     )
                 }, color = Color.White)
             }
@@ -105,7 +115,7 @@ fun WeatherDetailsScreen(weatherInfo: WeatherInfo = WeatherInfo()){
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(
                         painter = painterResource(R.drawable.clock),
-                        contentDescription = "Hourly Forecast "
+                        contentDescription = stringResource(R.string.hourly_forecast)
                     )
                     Text(stringResource(R.string._3_hours_gap_forecast), color = Color.White)
 
@@ -133,7 +143,7 @@ fun WeatherDetailsScreen(weatherInfo: WeatherInfo = WeatherInfo()){
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Default.DateRange,
-                        contentDescription = "Hourly Forecast ",
+                        contentDescription = stringResource(R.string.hourly_forecast),
                         tint = Color.White
                     )
                     Text(stringResource(R.string.daily_forecast), color = Color.White)

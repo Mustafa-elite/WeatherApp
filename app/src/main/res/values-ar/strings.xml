@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string name="app_name">توقعات الطقس</string>
+<string name="today">اليوم</string>
+<string name="sunrise">شروق الشمس:</string>
+<string name="sunset">غروب الشمس:</string>
+<string name="_3_hours_gap_forecast">توقع الطقس بفارق 3 ساعات</string>
+<string name="daily_forecast">التوقع اليومي</string>
+<string name="invalid_time">وقت غير صالح</string>
+<string name="confirm">تأكيد</string>
+<string name="pick_date">اختر التاريخ: %1$s</string>
+<string name="pick_time">اختر الوقت: %1$s</string>
+<string name="delete">حذف</string>
+<string name="lat_lon">خط العرض: %1$s، خط الطول: %2$s</string>
+<string name="time">الوقت: %1$s</string>
+<string name="alarm_image">صورة التنبيه</string>
+<string name="add_to_favorite">إضافة إلى المفضلة</string>
+<string name="weather_background">خلفية الطقس</string>
+<string name="weather_icon">أيقونة الطقس</string>
+<string name="set_as_default">تعيين كافتراضي</string>
+<string name="deleted_successfully">تم الحذف بنجاح</string>
+<string name="internal_problem">مشكلة داخلية</string>
+<string name="unknown_city">مدينة غير معروفة</string>
+<string name="unknown_country">بلد غير معروف</string>
+<string name="cant_get_location">تعذر الحصول على الموقع</string>
+<string name="weather_alert">تنبيه طقس: %1$s، %2$s</string>
+<string name="the_weather_now_is">الطقس الآن: %1$s</string>
+<string name="weather_state">حالة الطقس</string>
+<string name="feels_like">درجة الحرارة المحسوسة</string>
+<string name="lowest_temperature">أقل درجة حرارة</string>
+<string name="highest_temperature">أعلى درجة حرارة</string>
+<string name="humidity">الرطوبة</string>
+<string name="wind_speed">سرعة الرياح</string>
+<string name="cloud_percentage">نسبة الغيوم</string>
+<string name="weather_image">صورة الطقس</string>
+<string name="hourly_forecast">توقعات الطقس لكل ساعة</string>
+<string name="background_image">صورة الخلفية</string>
+<string name="confirm_location">تأكيد الموقع</string>
+<string name="selected_location">الموقع المحدد</string>
+<string name="search_location">البحث عن موقع</string>
+<string name="splash_screen">شاشة البداية</string>
+<string name="language">اللغة</string>
+<string name="temperature_unit">وحدة الحرارة</string>
+<string name="speed_unit">وحدة السرعة</string>
+</resources>

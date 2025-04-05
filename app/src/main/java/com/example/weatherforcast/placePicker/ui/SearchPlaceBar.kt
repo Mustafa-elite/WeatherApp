@@ -16,7 +16,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.weatherforcast.R
 import com.example.weatherforcast.placePicker.PlacesViewModel
 
 @Composable
@@ -38,8 +40,10 @@ fun SearchPlaceBar(viewModel: PlacesViewModel,
                 query = it
                 onQueryChange(it)
             },
-            label = { Text("Search Location") },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp)
+            label = { Text(stringResource(R.string.search_location)) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp)
         )
 
         LazyColumn {

@@ -20,23 +20,24 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.withContext
 
 
-class WeatherRemoteDataSource (private val weatherService: WeatherService){
+class WeatherRemoteDataSource (private val weatherService: WeatherService) :
+    IWeatherRemoteDataSource {
 
-    suspend fun getCurrentWeatherLonLat(lon:Double,lat:Double): Flow<CurrentWeatherResponse> {
+    override suspend fun getCurrentWeatherLonLat(lon:Double, lat:Double): Flow<CurrentWeatherResponse> {
         Log.i("TAG", "getCurrentWeatherLonLat: ")
         return flowOf(weatherService.getCurrentWeatherByLonLat(lon,lat))
     }
-    suspend fun getDailyWeatherLonLat(lon:Double,lat:Double,numOfDays:Int=7): Flow<DailyWeatherResponse> {
+    override suspend fun getDailyWeatherLonLat(lon:Double, lat:Double, numOfDays:Int): Flow<DailyWeatherResponse> {
         Log.i("TAG", "getDailyWeatherLonLat: ")
         return flowOf(weatherService.getDailyWeatherByLonLat(lon,lat,numOfDays))
     }
 
-    suspend fun getThreeHoursForecastLonLat(lon:Double,lat:Double,numOfForecasts:Int=9): Flow<ThreeHoursForecastResponse> {
+    override suspend fun getThreeHoursForecastLonLat(lon:Double, lat:Double, numOfForecasts:Int): Flow<ThreeHoursForecastResponse> {
         Log.i("TAG", "getDailyWeatherLonLat: ")
         return flowOf(weatherService.getThreeHoursForecast(lon,lat,numOfForecasts))
     }
 
-    suspend fun getWeatherDetails(lon: Double, lat: Double) :WeatherInfo {
+    override suspend fun getWeatherDetails(lon: Double, lat: Double) :WeatherInfo {
         return withContext(Dispatchers.IO) {
             combine(
                 getCurrentWeatherLonLat(lon, lat),
@@ -71,7 +72,7 @@ class WeatherRemoteDataSource (private val weatherService: WeatherService){
         }
     }
 
-    fun getPlacesApiAutoComplete(query: String, placesClient: PlacesClient): Task<FindAutocompletePredictionsResponse> {
+    override fun getPlacesApiAutoComplete(query: String, placesClient: PlacesClient): Task<FindAutocompletePredictionsResponse> {
         val request = FindAutocompletePredictionsRequest.builder()
             .setQuery(query)
             .build()
@@ -80,7 +81,7 @@ class WeatherRemoteDataSource (private val weatherService: WeatherService){
 
     }
 
-    fun fetchPlaceById(placeId: String, placesClient: PlacesClient): Task<FetchPlaceResponse> {
+    override fun fetchPlaceById(placeId: String, placesClient: PlacesClient): Task<FetchPlaceResponse> {
         val request= FetchPlaceRequest.newInstance(placeId, listOf(Place.Field.LAT_LNG, Place.Field.NAME))
         return placesClient.fetchPlace(request)
 

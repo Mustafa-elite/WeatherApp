@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -31,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -45,6 +45,7 @@ import com.example.weatherforcast.AlarmScreen.ui.AlertsScreen
 import com.example.weatherforcast.favouriteScreen.FavouritesViewModel
 import com.example.weatherforcast.favouriteScreen.FavouritesViewModelFactory
 import com.example.weatherforcast.favouriteScreen.ui.FavouritesScreen
+import com.example.weatherforcast.helpyclasses.LanguageUtil
 import com.example.weatherforcast.homeScreen.HomeViewModel
 import com.example.weatherforcast.homeScreen.ui.HomeScreen
 import com.example.weatherforcast.homeScreen.HomeViewModelFactory
@@ -58,10 +59,13 @@ import com.example.weatherforcast.model.remote.WeatherRemoteDataSource
 import com.example.weatherforcast.model.repositories.WeatherDataRepository
 import com.example.weatherforcast.placePicker.PlacesViewModelFactory
 import com.example.weatherforcast.placePicker.ui.PlacePicker
+import com.example.weatherforcast.settings.SettingViewModelFactory
+import com.example.weatherforcast.settings.ui.SettingScreen
 import com.example.weatherforcast.ui.theme.WeatherForcastTheme
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
 import com.google.gson.Gson
+import com.yariksoffice.lingver.Lingver
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -78,7 +82,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+
 }
+
 
 @Composable
 fun MySplashScreen(action: () -> Unit) {
@@ -99,7 +105,7 @@ fun MySplashScreen(action: () -> Unit) {
             .background(colorResource(R.color.Default_Colour)),
         contentAlignment = Alignment.Center
     ) {
-        Image(painter = painterResource(R.drawable.splash), contentDescription = "Splash Screen")
+        Image(painter = painterResource(R.drawable.splash), contentDescription = stringResource(R.string.splash_screen))
     }
 }
 
@@ -193,7 +199,18 @@ private fun WeatherApp() {
                     )),{navController.navigate(Screen.AlertMaker.rout)})
             }
             composable(route = Screen.Setting.rout) {
-                SettingScreen()
+                SettingScreen(
+                    viewModel(
+                    factory = SettingViewModelFactory(
+                        WeatherDataRepository.getInstance(
+                            WeatherRemoteDataSource(RetrofitHelper.weatherService),
+                            WeatherLocalDatSource(
+                                WeatherDatabase.getInstance(LocalContext.current).getWeatherDao(),
+                                SharedPrefImp(LocalContext.current.getSharedPreferences("weather_prefs", Context.MODE_PRIVATE))
+                            )
+                        )
+                    ))
+                )
             }
             composable(route = Screen.Map.rout) {
                 PlacePicker(
@@ -306,18 +323,4 @@ fun BottomNavigationBar(navController: NavHostController) {
     }
 }
 
-
-@Composable
-fun SettingScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Setting Screen",
-            style = MaterialTheme.typography.headlineLarge
-        )
-    }
-}
 

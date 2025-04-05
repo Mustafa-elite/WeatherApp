@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 
-class HomeViewModel(val dataRepository: WeatherDataRepository):ViewModel() {
+class HomeViewModel(private val dataRepository: WeatherDataRepository):ViewModel() {
     private val _weatherHomeViewResponse:MutableStateFlow<HomeViewResponse> = MutableStateFlow(HomeViewResponse.Loading)
     val weatherResponse=_weatherHomeViewResponse.asStateFlow()
 

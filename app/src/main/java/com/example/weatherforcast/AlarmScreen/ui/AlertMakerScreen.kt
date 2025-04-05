@@ -21,8 +21,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.weatherforcast.AlarmScreen.AlertMakerViewModel
+import com.example.weatherforcast.R
 import com.example.weatherforcast.helpyclasses.AlertsManager
 import com.example.weatherforcast.model.data.WeatherAlert
 import com.google.android.gms.maps.model.CameraPosition
@@ -87,14 +89,14 @@ fun AlertMakerScreen(alertMakerViewModel: AlertMakerViewModel,afterAddingAction:
                 afterAddingAction()
             }else
             {
-                Toast.makeText(context,"Invalid time",Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.invalid_time),Toast.LENGTH_SHORT).show()
             }
                  },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text("Confirm")
+            Text(stringResource(R.string.confirm))
         }
     }
 }
@@ -127,7 +129,7 @@ fun DateAndTimePicker(onDateTimeSelected: (Long) -> Unit) {
                 calendar.get(Calendar.DAY_OF_MONTH)
             ).show()
         }, modifier = Modifier.fillMaxWidth()) {
-            Text("Pick Date: $selectedDate")
+            Text(stringResource(R.string.pick_date, selectedDate))
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -147,7 +149,7 @@ fun DateAndTimePicker(onDateTimeSelected: (Long) -> Unit) {
                 true
             ).show()
         }, modifier = Modifier.fillMaxWidth()) {
-            Text("Pick Time: $selectedTime")
+            Text(stringResource(R.string.pick_time, selectedTime))
         }
     }
 }

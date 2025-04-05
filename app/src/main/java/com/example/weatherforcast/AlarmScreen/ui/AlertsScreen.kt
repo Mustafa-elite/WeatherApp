@@ -39,12 +39,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weatherforcast.AlarmScreen.AlertViewModel
 import com.example.weatherforcast.AlarmScreen.AlertViewResponse
+import com.example.weatherforcast.R
 import com.example.weatherforcast.favouriteScreen.ui.LoadingIndicator
 import com.example.weatherforcast.favouriteScreen.ui.WeatherItem
 import com.example.weatherforcast.helpyclasses.AlertsManager
@@ -73,7 +75,7 @@ fun AlertsScreen(
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
         ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = "add to Favorite")
+            Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(R.string.add_to_favorite))
         }
 
         when (alertResponse) {
@@ -140,7 +142,7 @@ fun AlertItem(
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete",
+                    contentDescription = stringResource(R.string.delete),
                     tint = Color.Red
                 )
             }
@@ -167,19 +169,19 @@ fun AlertItem(
                         color = Color.Black
                     )
                     Text(
-                        text = "Lat: ${weatherAlert.lat}, Lon: ${weatherAlert.lon}",
+                        text = stringResource(R.string.lat_lon, weatherAlert.lat, weatherAlert.lon),
                         fontSize = 14.sp,
                         color = Color.Gray
                     )
                     Text(
-                        text = "Time: $formattedDate",
+                        text = stringResource(R.string.time, formattedDate),
                         fontSize = 14.sp,
                         color = Color.Blue
                     )
                 }
                 Icon(
                     Icons.Default.Notifications,
-                    contentDescription = "Alarm Image",
+                    contentDescription = stringResource(R.string.alarm_image),
                     modifier = Modifier.size(30.dp)
                 )
             }

@@ -9,11 +9,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
+import com.example.weatherforcast.R
 import com.example.weatherforcast.helpyclasses.DateManager
 import com.example.weatherforcast.model.data.ThreeHoursWeatherData
 import kotlin.math.round
@@ -22,12 +24,12 @@ import kotlin.math.round
 fun HourlyForecast(threeHoursItem: ThreeHoursWeatherData, timezone: Int) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            text = DateManager.getTimeFromSeconds(threeHoursItem.dt + timezone),
+            text = DateManager.getTimeFromSeconds(threeHoursItem.dt , timezone),
             color = Color.White
         )
         Image(
             painter = painterResource(threeHoursItem.weather[0].iconRes),
-            contentDescription = "weather image",
+            contentDescription = stringResource(R.string.weather_image),
             Modifier.fillMaxWidth()
         )
         Text(buildAnnotatedString {

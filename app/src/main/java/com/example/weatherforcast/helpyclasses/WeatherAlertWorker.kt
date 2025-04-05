@@ -75,8 +75,17 @@ class WeatherAlertWorker(_context: Context, workerParameters: WorkerParameters) 
                 }
                 val notification=NotificationCompat.Builder(context,chanelId)
                     .setSmallIcon(R.drawable.splash)
-                    .setContentTitle(it.cityName+", "+it.countryName+" Weather Alert")
-                    .setContentText("The Weather Now is "+ it.weatherDescription)
+                    .setContentTitle(
+                        context.getString(
+                            R.string.weather_alert,
+                            it.cityName,
+                            it.countryName
+                        ))
+                    .setContentText(
+                        context.getString(
+                            R.string.the_weather_now_is,
+                            it.weatherDescription
+                        ))
                     .setPriority(NotificationCompat.PRIORITY_MAX)
                     .setSound(soundUri)
                     .build()

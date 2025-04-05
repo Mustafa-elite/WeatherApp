@@ -64,14 +64,15 @@ class FavouritesViewModel (private val dataRepository: WeatherDataRepository): V
         return dataRepository.getMainLocationId()==weatherInfo.weatherId
     }
 
-    fun removeFavItem(weatherInfo: WeatherInfo) {
+    fun removeFavItem(weatherInfo: WeatherInfo,onResult:(Boolean)->String) {
         viewModelScope.launch {
             try {
                 dataRepository.removeFavWeatherById(weatherInfo.weatherId)
-                _viewMessage.emit("Deleted Successfully")
+                //_viewMessage.emit("Deleted Successfully")
+                _viewMessage.emit(onResult(true))
             }catch (e:Exception){
-
-                _viewMessage.emit("Internal Problem")
+                _viewMessage.emit(onResult(false))
+                //_viewMessage.emit("Internal Problem")
 
             }
         }
