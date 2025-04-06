@@ -1,5 +1,6 @@
 package com.example.weatherforcast.AlarmScreen.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weatherforcast.AlarmScreen.AlertViewModel
 import com.example.weatherforcast.AlarmScreen.AlertViewResponse
+import com.example.weatherforcast.MainApp.getLocaleString
 import com.example.weatherforcast.R
 import com.example.weatherforcast.favouriteScreen.ui.LoadingIndicator
 import com.example.weatherforcast.favouriteScreen.ui.WeatherItem
@@ -54,6 +56,7 @@ import com.example.weatherforcast.helpyclasses.DateManager
 import com.example.weatherforcast.model.data.WeatherAlert
 import com.example.weatherforcast.model.data.WeatherInfo
 import com.google.maps.android.compose.GoogleMap
+import kotlin.math.round
 
 @Composable
 fun AlertsScreen(
@@ -111,6 +114,7 @@ fun AlertListScreen(
 
 }
 
+@SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlertItem(
@@ -169,7 +173,9 @@ fun AlertItem(
                         color = Color.Black
                     )
                     Text(
-                        text = stringResource(R.string.lat_lon, weatherAlert.lat, weatherAlert.lon),
+                        text = stringResource(R.string.lat_lon,
+                            (round(weatherAlert.lat*10000) /10000).getLocaleString(),
+                            (round(weatherAlert.lon*10000)/10000).getLocaleString()),
                         fontSize = 14.sp,
                         color = Color.Gray
                     )

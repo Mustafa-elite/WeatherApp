@@ -36,11 +36,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.BaselineShift
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.weatherforcast.MainApp.getLocaleString
+import com.example.weatherforcast.MainApp.getLocaleTempUnit
+import com.example.weatherforcast.MainApp.getLocaleWeatherDescription
 import com.example.weatherforcast.R
 import com.example.weatherforcast.model.data.WeatherInfo
+import kotlin.math.round
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -141,14 +149,24 @@ fun WeatherItem(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Column {
-                                Text(
-                                    text = weatherInfo.temp.toString(),
+
+                                Text(buildAnnotatedString {
+                                    append(weatherInfo.temp.getLocaleString())
+
+                                    withStyle(
+                                        style = SpanStyle(
+                                            fontSize = 10.sp,
+                                            baselineShift = BaselineShift.Superscript
+                                        )
+                                    ) {
+                                        append(weatherInfo.temperatureUnit.unitSymbol.getLocaleTempUnit())
+                                    } },
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White
                                 )
                                 Text(
-                                    text = weatherInfo.weatherDescription,
+                                    text = weatherInfo.weatherDescription.getLocaleWeatherDescription(),
                                     fontSize = 14.sp,
                                     color = Color.LightGray
                                 )

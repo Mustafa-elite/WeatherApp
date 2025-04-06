@@ -8,6 +8,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import com.example.weatherforcast.MainApp.getLocaleString
+import com.example.weatherforcast.MainApp.getLocaleTempUnit
 import com.example.weatherforcast.R
 import com.example.weatherforcast.helpyclasses.DateManager
 import com.example.weatherforcast.helpyclasses.LocationUtil

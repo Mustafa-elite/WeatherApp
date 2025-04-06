@@ -4,13 +4,17 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -22,19 +26,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.weatherforcast.R
 import com.example.weatherforcast.helpyclasses.LocationUtil
 import com.example.weatherforcast.homeScreen.HomeViewModel
 import com.example.weatherforcast.homeScreen.HomeViewResponse
-import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.delay
 
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel, onLocationDeniedAction: () -> Unit){
+fun HomeScreen(
+    homeViewModel: HomeViewModel,
+    snackBarHostState: SnackbarHostState,
+    onLocationDeniedAction: () -> Unit,
+    onChangeLocationRequested: () -> Unit
+){
     val context=LocalContext.current
     val weatherState by homeViewModel.weatherResponse.collectAsState()
     var location by remember { mutableStateOf<Location?>(null) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    val errorMessageRes by homeViewModel.viewMessage.collectAsState(R.string.Emtpy_String)
+    var messageStr by  remember { mutableStateOf("") }
 
     val locationPermissionLauncher= rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()){permissions->
@@ -46,7 +58,7 @@ fun HomeScreen(homeViewModel: HomeViewModel, onLocationDeniedAction: () -> Unit)
                     location=loc
                     //homeViewModel.getRecentWeather(loc.longitude, loc.latitude)
                 },
-                {throwable ->errorMessage=throwable.message})
+                {throwable ->messageStr=(throwable.message ?: "No Internet or Internal Server Error")})
         }
         else{
             onLocationDeniedAction.invoke()
@@ -63,6 +75,7 @@ fun HomeScreen(homeViewModel: HomeViewModel, onLocationDeniedAction: () -> Unit)
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ){
+            delay(1000)
             if(homeViewModel.hasDefaultLocation()){
                 Log.i("TAG", "HomeScreen: no location permission but has default location")
                 homeViewModel.getDefaultLocation()
@@ -84,7 +97,7 @@ fun HomeScreen(homeViewModel: HomeViewModel, onLocationDeniedAction: () -> Unit)
                         location=loc
                         //homeViewModel.getRecentWeather(loc.longitude, loc.latitude)
                     },
-                    {throwable ->errorMessage=throwable.message})
+                    {throwable -> messageStr=(throwable.message ?:"No Internet or Internal Server Error" ) })
             }
 
         }
@@ -94,27 +107,40 @@ fun HomeScreen(homeViewModel: HomeViewModel, onLocationDeniedAction: () -> Unit)
     }
 
 
-    Box (modifier = Modifier
-        .fillMaxSize()
-        .background(colorResource(R.color.test_color)),
+    LaunchedEffect(errorMessageRes) {
+        Log.i("TAG", "HomeScreen: $errorMessageRes")
+        messageStr=context.getString(errorMessageRes)
+    }
+    LaunchedEffect (messageStr){
+        if (messageStr.isNotBlank()) {
+            snackBarHostState.showSnackbar(messageStr)
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(R.color.test_color)),
         contentAlignment = Alignment.Center
-    ){
-        Column(modifier = Modifier
-            .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            when(weatherState){
-                is HomeViewResponse.Failure ->
-                {
-                    Toast.makeText(context,"response.failure in home screen",Toast.LENGTH_SHORT).show()
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            when (weatherState) {
+                is HomeViewResponse.Failure -> {
+                    WeatherDetailsScreen()
                 }
                 is HomeViewResponse.Loading -> {
                     WeatherDetailsScreen()
                 }
-                is HomeViewResponse.SuccessWeatherInfo -> WeatherDetailsScreen(weatherInfo = (weatherState as HomeViewResponse.SuccessWeatherInfo).data)
+                is HomeViewResponse.SuccessWeatherInfo -> WeatherDetailsScreen(
+                    weatherInfo = (weatherState as HomeViewResponse.SuccessWeatherInfo).data,
+                    navigateToHome = onChangeLocationRequested,
+                    navigateToMap = onLocationDeniedAction
+                )
             }
         }
-
-
     }
 }
 

@@ -29,6 +29,10 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.weatherforcast.MainApp.getLocaleString
+import com.example.weatherforcast.MainApp.getLocaleTempUnit
+import com.example.weatherforcast.MainApp.getLocaleWeatherDescription
+import com.example.weatherforcast.MainApp.getLocaleWindSpeedUnit
 import com.example.weatherforcast.R
 import com.example.weatherforcast.model.data.WeatherInfo
 
@@ -74,7 +78,11 @@ fun GlowingWeatherCircle(sizeDP: Dp =300.dp, weatherInfo: WeatherInfo) {
                         append("®")
 
                     }
-                    append(weatherInfo.feelsLike.toString())
+                    append(weatherInfo.feelsLike.getLocaleString())
+                    withStyle(style = SpanStyle(fontSize = 8.sp)) {
+                        append(weatherInfo.temperatureUnit.unitSymbol.getLocaleTempUnit())
+
+                    }
                 },
                 color = Color.White,
                 fontSize = 12.sp,
@@ -84,21 +92,20 @@ fun GlowingWeatherCircle(sizeDP: Dp =300.dp, weatherInfo: WeatherInfo) {
             Spacer(Modifier.height(10.dp))
             Text(
                 text = buildAnnotatedString {
-                    append(weatherInfo.temp.toString())
+                    append(weatherInfo.temp.getLocaleString())
                     withStyle(
                         style = SpanStyle(
                             fontSize = 16.sp,
                             baselineShift = BaselineShift.Superscript,
                         )
                     ) {
-                        append("o")
                         withStyle(
                             style = SpanStyle(
                                 fontSize = 16.sp,
                                 baselineShift = BaselineShift.Subscript
                             )
                         ) {
-                            append(weatherInfo.temperatureUnit.unitSymbol)
+                            append(weatherInfo.temperatureUnit.unitSymbol.getLocaleTempUnit())
 
                         }
                     }
@@ -123,21 +130,20 @@ fun GlowingWeatherCircle(sizeDP: Dp =300.dp, weatherInfo: WeatherInfo) {
                     )
                     Text(
                         text = buildAnnotatedString {
-                            append(weatherInfo.minTemp.toString())
+                            append(weatherInfo.minTemp.getLocaleString())
                             withStyle(
                                 style = SpanStyle(
                                     fontSize = 8.sp,
                                     baselineShift = BaselineShift.Superscript,
                                 )
                             ) {
-                                append("o")
                                 withStyle(
                                     style = SpanStyle(
                                         fontSize = 8.sp,
                                         baselineShift = BaselineShift.Subscript
                                     )
                                 ) {
-                                    append(weatherInfo.temperatureUnit.unitSymbol)
+                                    append(weatherInfo.temperatureUnit.unitSymbol.getLocaleTempUnit())
 
                                 }
                             }
@@ -149,7 +155,7 @@ fun GlowingWeatherCircle(sizeDP: Dp =300.dp, weatherInfo: WeatherInfo) {
                         )
                 }
                 Text(
-                    text = weatherInfo.weatherDescription,
+                    text = weatherInfo.weatherDescription.getLocaleWeatherDescription(),
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
@@ -157,7 +163,7 @@ fun GlowingWeatherCircle(sizeDP: Dp =300.dp, weatherInfo: WeatherInfo) {
                 Row {
                     Text(
                         text = buildAnnotatedString {
-                            append(weatherInfo.maxTemp.toString())
+                            append(weatherInfo.maxTemp.getLocaleString())
                             withStyle(
                                 style = SpanStyle(
                                     fontSize = 8.sp,
@@ -171,7 +177,7 @@ fun GlowingWeatherCircle(sizeDP: Dp =300.dp, weatherInfo: WeatherInfo) {
                                         baselineShift = BaselineShift.Subscript
                                     )
                                 ) {
-                                    append(weatherInfo.temperatureUnit.unitSymbol)
+                                    append(weatherInfo.temperatureUnit.unitSymbol.getLocaleTempUnit())
 
                                 }
                             }
@@ -210,7 +216,7 @@ fun GlowingWeatherCircle(sizeDP: Dp =300.dp, weatherInfo: WeatherInfo) {
                         )
                         Text(
                             text = buildAnnotatedString {
-                                append(weatherInfo.humidityPercentage.toString())
+                                append(weatherInfo.humidityPercentage.getLocaleString())
                                 append("%")
                             },
                             color = Color.White,
@@ -228,8 +234,8 @@ fun GlowingWeatherCircle(sizeDP: Dp =300.dp, weatherInfo: WeatherInfo) {
                         )
                         Text(
                             text = buildAnnotatedString {
-                                append(weatherInfo.windSpeed.toString())
-                                append(weatherInfo.windSpeedUnit.unitSymbol)
+                                append(weatherInfo.windSpeed.getLocaleString())
+                                append(weatherInfo.windSpeedUnit.unitSymbol.getLocaleWindSpeedUnit())
                             },
                             color = Color.White,
                             fontSize = 12.sp,
@@ -246,7 +252,7 @@ fun GlowingWeatherCircle(sizeDP: Dp =300.dp, weatherInfo: WeatherInfo) {
                         )
                         Text(
                             text = buildAnnotatedString {
-                                append(weatherInfo.cloudyPercentage.toString())
+                                append(weatherInfo.cloudyPercentage.getLocaleString())
                                 append("%")
                             },
                             color = Color.White,

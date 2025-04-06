@@ -48,7 +48,7 @@ class WeatherLocalDatSource (private val weatherDao: WeatherDao,
         }
     }
 
-    override fun getMainWeatherId(): Int {
+    override  fun getMainWeatherId(): Int {
         return sharedPref.getMainWeatherId()
 
 

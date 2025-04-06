@@ -41,4 +41,10 @@
     <string name="language">Language</string>
     <string name="temperature_unit">Temperature Unit</string>
     <string name="speed_unit">Speed Unit</string>
+    <string name="change_location">Change Location</string>
+    <string name="failed_to_load_weather_data">Failed to load weather data.</string>
+    <string name="error_in_retrofit">error in retrofit</string>
+    <string name="location_unavailable">Location unavailable</string>
+    <string name="Emtpy_String" />
+    <string name="no_internet_or_internal_server_error">No Internet or Internal Server Error</string>
 </resources>

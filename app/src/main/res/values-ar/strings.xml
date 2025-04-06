@@ -4,7 +4,7 @@
 <string name="today">اليوم</string>
 <string name="sunrise">شروق الشمس:</string>
 <string name="sunset">غروب الشمس:</string>
-<string name="_3_hours_gap_forecast">توقع الطقس بفارق 3 ساعات</string>
+<string name="_3_hours_gap_forecast">توقع الطقس بفارق ۳ ساعات</string>
 <string name="daily_forecast">التوقع اليومي</string>
 <string name="invalid_time">وقت غير صالح</string>
 <string name="confirm">تأكيد</string>
@@ -42,4 +42,10 @@
 <string name="language">اللغة</string>
 <string name="temperature_unit">وحدة الحرارة</string>
 <string name="speed_unit">وحدة السرعة</string>
+    <string name="change_location">تغيير الموقع</string>
+    <string name="failed_to_load_weather_data">فشل في تحميل بيانات الطقس.</string>
+    <string name="error_in_retrofit">خطأ في Retrofit</string>
+    <string name="location_unavailable">الموقع غير متاح</string>
+    <string name="Emtpy_String" />
+    <string name="no_internet_or_internal_server_error">لا يوجد اتصال بالإنترنت أو خطأ في الخادم الداخلي</string>
 </resources>

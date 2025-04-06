@@ -62,30 +62,40 @@ class WeatherDataRepository private constructor(
                     return@flow
                 }
             }
-        val remoteWeatherDetails=remoteDataSource.getWeatherDetails(lon,lat)
+        try {
+            val remoteWeatherDetails=remoteDataSource.getWeatherDetails(lon,lat)
 
-        //get from sharedPref
-        remoteWeatherDetails.convertWindSpeedUnit(localDataSource.getSpeedUnit())
-        remoteWeatherDetails.convertTemperatureUnit(localDataSource.getTemperatureUnit())
+            //get from sharedPref
+            remoteWeatherDetails.convertWindSpeedUnit(localDataSource.getSpeedUnit())
+            remoteWeatherDetails.convertTemperatureUnit(localDataSource.getTemperatureUnit())
 
-        emit(remoteWeatherDetails)
-        if(isFavourite){
-            val weatherId=localDataSource.saveWeather(remoteWeatherDetails)
-            if(isMainLocation){
-                localDataSource.saveMainWeatherId(weatherId.toInt())
+            emit(remoteWeatherDetails)
+            if(isFavourite){
+                val weatherId=localDataSource.saveWeather(remoteWeatherDetails)
+                if(isMainLocation){
+                    localDataSource.saveMainWeatherId(weatherId.toInt())
+                }
             }
+        }catch (e:Exception){
+            throw RuntimeException("api_Error")
         }
+
 
     }.flowOn(Dispatchers.IO)
 
     private suspend fun validateWeatherData(weatherInfo: WeatherInfo): WeatherInfo {
 
-        weatherInfo.convertWindSpeedUnit(WindSpeedUnit.METER_SECOND)
-        weatherInfo.convertTemperatureUnit(TemperatureUnit.KELVIN)
-        val validatedCurrent=validateCurrentData(weatherInfo)
-        val validatedThreeHours=validateThreeHoursForecast(validatedCurrent)
-        val validatedDaily = validateDailyForecast(validatedThreeHours)
-        return validatedDaily
+        try {
+
+            weatherInfo.convertWindSpeedUnit(WindSpeedUnit.METER_SECOND)
+            weatherInfo.convertTemperatureUnit(TemperatureUnit.KELVIN)
+            val validatedCurrent=validateCurrentData(weatherInfo)
+            val validatedThreeHours=validateThreeHoursForecast(validatedCurrent)
+            val validatedDaily = validateDailyForecast(validatedThreeHours)
+            return validatedDaily
+        }catch (e:Exception){
+            throw RuntimeException("api_Error")
+        }
     }
 
     private suspend  fun validateDailyForecast(weatherInfo: WeatherInfo): WeatherInfo {

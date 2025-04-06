@@ -30,6 +30,7 @@ class FavouritesViewModel (private val dataRepository: WeatherDataRepository): V
             try {
                 dataRepository.getFavData()
                     .catch {
+                        //if error in api, it.message will have "api_Error"
                         _favWeatherResponse.emit(FavViewResponse.Failure(it)) }
                     .collect{
                        _favWeatherResponse.emit(FavViewResponse.Success(it))}

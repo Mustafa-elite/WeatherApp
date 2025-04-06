@@ -1,10 +1,13 @@
 package com.example.weatherforcast.MainApp.ui
 
 import android.content.Context
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +49,9 @@ import com.google.gson.Gson
 @Composable
 fun WeatherApp() {
     var navController = rememberNavController()
-    var action: ((LatLng) -> Unit)? = null
+    var getWeatherAction: ((LatLng) -> Unit)? = null
+    var removeDefaultWeatherAction:(()->Unit)?=null
+    val snackbarHostState = remember { SnackbarHostState() }
     val placesClient= Places.createClient(LocalContext.current)
     val currentRoute = remember { mutableStateOf(Screen.Splash.rout) }
     LaunchedEffect(navController) {
@@ -62,7 +67,7 @@ fun WeatherApp() {
             if (currentRoute.value != Screen.Splash.rout) {
                 BottomNavigationBar(navController)
             }
-        }
+        }, snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { innerPadding ->
         NavHost(
             navController = navController,
@@ -93,16 +98,20 @@ fun WeatherApp() {
                         )
                     )
                 )
-                HomeScreen(viewmodel,
+                getWeatherAction = { latlon ->
+                    viewmodel.getRecentWeather(latlon.longitude, latlon.latitude)
+                    Log.i("TAG", "WeatherApp: setting action")
+                }
+                removeDefaultWeatherAction={viewmodel.removeDefaultLocation() }
+                HomeScreen(
+                    viewmodel,
+                    snackbarHostState,
+                    { navController.navigate(Screen.Map.rout) },
                     {
-                        action = { latlon ->
-                            viewmodel.getRecentWeather(
-                                latlon.longitude,
-                                latlon.latitude
-                            )
-                        }
-                        navController.navigate(Screen.Map.rout)
-                    })
+                        removeDefaultWeatherAction?.invoke()
+                        navController.navigate(Screen.Home.rout)
+                    }
+                )
             }
             composable(route = Screen.Favourites.rout) {
                 val viewModel: FavouritesViewModel = viewModel(
@@ -121,12 +130,11 @@ fun WeatherApp() {
                         )
                     )
                 )
+                getWeatherAction =
+                    { latLng -> viewModel.addFavWeather(latLng.longitude, latLng.latitude) }
                 FavouritesScreen(
                     viewModel,
-                    //sending the navigation to the map as a lamda
                     {
-                        action =
-                            { latLng -> viewModel.addFavWeather(latLng.longitude, latLng.latitude) }
                         navController.navigate(Screen.Map.rout)
                     },
                     { weatherInfo ->
@@ -197,7 +205,7 @@ fun WeatherApp() {
                         )
                     ),
                     { latlon ->
-                        action?.invoke(latlon)
+                        getWeatherAction?.invoke(latlon)
                         navController.popBackStack()
 
                     }
@@ -210,7 +218,12 @@ fun WeatherApp() {
                 val json = backStackEntry.arguments?.getString("weatherInfo")
                 val weatherInfo = Gson().fromJson(json, WeatherInfo::class.java)
                 weatherInfo?.let {
-                    WeatherDetailsScreen(it)
+                    WeatherDetailsScreen(it,
+                        {
+                            removeDefaultWeatherAction?.invoke()
+                            navController.navigate(Screen.Home.rout)
+                        },
+                        {navController.navigate(Screen.Map.rout)})
                 }
             }
             composable(route = Screen.AlertMaker.rout) {

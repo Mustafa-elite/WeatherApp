@@ -4,12 +4,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import com.example.weatherforcast.R
 import com.example.weatherforcast.placePicker.PlacesViewModel
@@ -58,7 +61,11 @@ fun PlacePicker(placesViewModel: PlacesViewModel,onConfirm:(LatLng) -> Unit) {
         Button(
             onClick = { selectedLocation?.let { latLng -> onConfirm(latLng)} },
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(id = R.color.Default_Colour2),
+                contentColor = Color.White
+            )
         ) {
             Text(stringResource(R.string.confirm_location))
         }

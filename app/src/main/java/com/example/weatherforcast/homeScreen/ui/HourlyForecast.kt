@@ -15,6 +15,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
+import com.example.weatherforcast.MainApp.getLocaleString
 import com.example.weatherforcast.R
 import com.example.weatherforcast.helpyclasses.DateManager
 import com.example.weatherforcast.model.data.ThreeHoursWeatherData
@@ -33,7 +34,7 @@ fun HourlyForecast(threeHoursItem: ThreeHoursWeatherData, timezone: Int) {
             Modifier.fillMaxWidth()
         )
         Text(buildAnnotatedString {
-            append(round(threeHoursItem.main.temp).toInt().toString())
+            append(round(threeHoursItem.main.temp).toInt().getLocaleString())
             withStyle(
                 style = SpanStyle(
                     fontSize = 8.sp,

@@ -21,6 +21,8 @@ import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.weatherforcast.MainApp.getLocaleString
+import com.example.weatherforcast.MainApp.getLocaleWeatherDescription
 import com.example.weatherforcast.R
 import com.example.weatherforcast.helpyclasses.DateManager
 import com.example.weatherforcast.model.data.DailyWeatherData
@@ -48,10 +50,10 @@ fun DailyForecastItem(dayItem: DailyWeatherData, timezone: Int) {
             )
 
         }
-        Text(text = dayItem.weather[0].description, color = Color.White)
+        Text(text = dayItem.weather[0].description.getLocaleWeatherDescription(), color = Color.White)
 
         Text(buildAnnotatedString {
-            append(round(dayItem.temp.min).toInt().toString())
+            append(round(dayItem.temp.min).toInt().getLocaleString())
             withStyle(
                 style = SpanStyle(
                     fontSize = 8.sp,
@@ -61,7 +63,7 @@ fun DailyForecastItem(dayItem: DailyWeatherData, timezone: Int) {
                 append("o")
             }
             append("/")
-            append(round(dayItem.temp.max).toInt().toString())
+            append(round(dayItem.temp.max).toInt().getLocaleString())
             withStyle(
                 style = SpanStyle(
                     fontSize = 8.sp,
