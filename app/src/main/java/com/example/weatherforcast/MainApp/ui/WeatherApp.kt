@@ -47,7 +47,7 @@ import com.google.android.libraries.places.api.Places
 import com.google.gson.Gson
 
 @Composable
-fun WeatherApp() {
+fun WeatherApp(startDestination: String) {
     var navController = rememberNavController()
     var getWeatherAction: ((LatLng) -> Unit)? = null
     var removeDefaultWeatherAction:(()->Unit)?=null
@@ -71,7 +71,7 @@ fun WeatherApp() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Splash.rout,
+            startDestination = startDestination,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(route = Screen.Splash.rout) {

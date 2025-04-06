@@ -122,4 +122,10 @@ class WeatherLocalDatSource (private val weatherDao: WeatherDao,
 
     }
 
+    override suspend fun updateWeatherAlert(weatherAlert: WeatherAlert) {
+        withContext(Dispatchers.IO){
+            weatherDao.updateWeatherAlert(weatherAlert)
+        }
+    }
+
 }

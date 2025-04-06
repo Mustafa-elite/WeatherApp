@@ -39,4 +39,7 @@ interface WeatherDao {
     @Query("SELECT * FROM WeatherAlerts WHERE weatherAlertId=:alertId")
     suspend fun getAlertWeatherById(alertId: Int):WeatherAlert
 
+    @Update
+    suspend fun updateWeatherAlert(weatherAlert: WeatherAlert)
+
 }

@@ -54,5 +54,6 @@ interface IWeatherDataRepository {
     suspend fun setTemperatureUnit(unit: TemperatureUnit)
 
     suspend fun setSpeedUnit(unit: WindSpeedUnit)
+    suspend fun updateAlertWeatherById(alertId: Int, seconds: Long)
 
 }

@@ -84,4 +84,8 @@ class FakeLocalDataSource(
     override suspend fun setSpeedUnit(unit: WindSpeedUnit) {
         TODO("Not yet implemented")
     }
+
+    override suspend fun updateWeatherAlert(weatherAlert: WeatherAlert) {
+        TODO("Not yet implemented")
+    }
 }

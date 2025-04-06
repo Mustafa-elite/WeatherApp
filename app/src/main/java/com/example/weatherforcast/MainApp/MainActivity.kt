@@ -5,10 +5,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.example.weatherforcast.MainApp.ui.Screen
 import com.example.weatherforcast.MainApp.ui.WeatherApp
 import com.example.weatherforcast.helpyclasses.AppLang
 import com.example.weatherforcast.helpyclasses.LanguageUtil
-import com.example.weatherforcast.ui.theme.WeatherForcastTheme
 import com.google.android.libraries.places.api.Places
 import java.text.NumberFormat
 import java.util.Locale
@@ -30,10 +30,16 @@ class MainActivity : ComponentActivity() {
                 LanguageUtil.changeLanguage(this, it)
             }
         }
+        val weatherInfoJson = intent.getStringExtra("weather_info")
+
         setContent {
-            WeatherForcastTheme {
-                WeatherApp()
+            val startDestination = if (!weatherInfoJson.isNullOrEmpty()) {
+                Screen.Details.createRoute(weatherInfoJson)
+            } else {
+                Screen.Splash.rout
             }
+
+            WeatherApp(startDestination = startDestination)
         }
     }
 

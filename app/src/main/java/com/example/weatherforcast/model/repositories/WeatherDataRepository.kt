@@ -239,4 +239,10 @@ class WeatherDataRepository private constructor(
     override suspend fun setSpeedUnit(unit: WindSpeedUnit) {
         localDataSource.setSpeedUnit(unit)
     }
+
+    override suspend fun updateAlertWeatherById(alertId: Int, seconds: Long) {
+        val weatherAlert=localDataSource.getWeatherAlertById(alertId)
+        weatherAlert.alertDateTime=seconds
+        localDataSource.updateWeatherAlert(weatherAlert)
+    }
 }

@@ -33,4 +33,5 @@ interface IWeatherLocalDatSource {
     suspend fun setTemperatureUnit(unit: TemperatureUnit)
 
     suspend fun setSpeedUnit(unit: WindSpeedUnit)
+    suspend fun updateWeatherAlert(weatherAlert: WeatherAlert)
 }
