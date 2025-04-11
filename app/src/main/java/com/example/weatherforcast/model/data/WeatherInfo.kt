@@ -116,6 +116,8 @@ class WeatherInfo(
             weatherDescription.contains("Drizzle", ignoreCase = true) -> R.drawable.drizzle_weather
             weatherDescription.contains("Snow", ignoreCase = true) -> R.drawable.snow_weather
             weatherDescription.contains("Thunderstorm", ignoreCase = true) -> R.drawable.thunderstorm_weather
+            weatherDescription.contains("cloud", ignoreCase = true) && isNight -> R.drawable.cloud_night
+            weatherDescription.contains("cloud", ignoreCase = true)&& !isNight  -> R.drawable.cloud_morning
             else -> R.drawable.else_weather
         }
         return imageRes
